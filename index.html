@@ -1,1086 +1,662 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neuro-Core | Unified Neurology Knowledge Base</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ultimate Neurology Platform</title>
+    <!-- Tailwind CSS for modern, responsive layouts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --bg-base: #030712;
-            --bg-sidebar: rgba(11, 17, 34, 0.6);
-            --glass-card: rgba(255, 255, 255, 0.02);
-            --border-glow: rgba(79, 209, 197, 0.15);
-            --border-subtle: rgba(255, 255, 255, 0.06);
-            --text-primary: #F8FAFC;
-            --text-secondary: #94A3B8;
-            --accent-teal: #4FD1C5;
-            --accent-blue: #3B82F6;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-primary);
-            overflow: hidden; 
-            height: 100vh;
-            display: flex;
-        }
-
-        /* 3D Canvas Canvas Context */
-        #canvas-ambient-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* --- APPLICATION LAYOUT HIERARCHY --- */
-        .app-container {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            width: 100vw;
-            height: 100vh;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        /* Sidebar Navigation */
-        .sidebar {
-            width: 320px;
-            background: var(--bg-sidebar);
-            border-right: 1px solid var(--border-subtle);
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .sidebar-header {
-            padding: 2rem 1.5rem;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-
-        .quran-header-verse {
-            font-family: 'Amiri', serif;
-            color: var(--accent-teal);
-            font-size: 1.6rem;
-            margin-bottom: 0.25rem;
-            text-shadow: 0 0 15px rgba(79, 209, 197, 0.3);
-        }
-
-        .quran-header-translation {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            font-style: italic;
-        }
-
-        .nav-scroller {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 1.5rem 1rem;
-        }
-
-        .nav-scroller::-webkit-scrollbar { width: 4px; }
-        .nav-scroller::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 4px; }
-
-        .category-group {
-            margin-bottom: 2rem;
-        }
-
-        .category-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-secondary);
-            margin-bottom: 0.75rem;
-            padding-left: 0.5rem;
-            font-weight: 600;
-        }
-
-        .nav-item {
-            display: block;
-            width: 100%;
-            background: none;
-            border: none;
-            text-align: left;
-            padding: 0.75rem 1rem;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            cursor: pointer;
-            border-radius: 10px;
-            transition: all 0.2s ease;
-            margin-bottom: 0.25rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .nav-item:hover, .nav-item.active {
-            color: #FFF;
-            background: rgba(255, 255, 255, 0.03);
-            border-left: 3px solid var(--accent-teal);
-            padding-left: 0.85rem;
-        }
-
-        /* Main Workspace Window */
-        .workspace {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .workspace-header {
-            padding: 1.5rem 2.5rem;
-            border-bottom: 1px solid var(--border-subtle);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 2rem;
-        }
-
-        .mobile-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: #FFF;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        /* --- GLOBAL REAL-TIME SEARCH ARCHITECTURE --- */
-        .search-wrapper {
-            position: relative;
-            flex-grow: 1;
-            max-width: 450px;
-        }
-
-        .search-input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-subtle);
-            padding: 0.6rem 1.2rem;
-            border-radius: 20px;
-            color: #FFF;
-            font-size: 0.85rem;
-            outline: none;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .search-input:focus {
-            border-color: rgba(79, 209, 197, 0.4);
-            background: rgba(255, 255, 255, 0.06);
-            box-shadow: 0 0 15px rgba(79, 209, 197, 0.1);
-        }
-
-        .search-dropdown {
-            position: absolute;
-            top: calc(100% + 8px);
-            left: 0;
-            width: 100%;
-            background: #0b1122;
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            max-height: 300px;
-            overflow-y: auto;
-            z-index: 100;
-            display: none;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            backdrop-filter: blur(20px);
-        }
-
-        .search-result-item {
-            padding: 0.85rem 1.2rem;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-
-        .search-result-item:last-child {
-            border-bottom: none;
-        }
-
-        .search-result-item:hover {
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        .search-result-title {
-            font-size: 0.9rem;
-            color: #FFF;
-            font-weight: 500;
-            margin-bottom: 0.15rem;
-        }
-
-        .search-result-category {
-            font-size: 0.7rem;
-            color: var(--accent-teal);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .search-no-results {
-            padding: 1.5rem;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-
-        .content-viewscreen {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 2.5rem;
-        }
-
-        .content-viewscreen::-webkit-scrollbar { width: 6px; }
-        .content-viewscreen::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 4px; }
-
-        /* --- MEDICAL CONTENT STYLING --- */
-        .knowledge-card {
-            background: var(--glass-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 20px;
-            padding: 2.5rem;
-            max-width: 900px;
-            margin: 0 auto;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            animation: viewFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .doc-title {
-            font-size: 2rem;
-            font-weight: 300;
-            color: #FFF;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.5px;
-        }
-
-        .doc-tag {
-            display: inline-block;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent-teal);
-            font-weight: 600;
-            margin-bottom: 2rem;
-        }
-
-        .doc-section-title {
-            font-size: 1.2rem;
-            color: #FFF;
-            margin: 2rem 0 1rem 0;
-            font-weight: 600;
-            border-bottom: 1px solid var(--border-subtle);
-            padding-bottom: 0.5rem;
-        }
-
-        .doc-text {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-        }
-
-        .medical-list {
-            list-style: none;
-            margin-bottom: 1.5rem;
-        }
-
-        .medical-list li {
-            position: relative;
-            padding-left: 1.5rem;
-            margin-bottom: 0.75rem;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: var(--text-secondary);
-        }
-
-        .medical-list li::before {
-            content: "◆";
-            position: absolute;
-            left: 0;
-            top: 2px;
-            color: var(--accent-blue);
-            font-size: 0.75rem;
-        }
-
-        .medical-list strong {
-            color: var(--text-primary);
-        }
-
-        /* Target styles for wizard custom dropdowns */
-        .wizard-input {
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .wizard-input:focus {
-            border-color: rgba(79, 209, 197, 0.4) !important;
-            box-shadow: 0 0 10px rgba(79, 209, 197, 0.15);
-        }
-
-        @keyframes viewFadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- MOBILE ADAPTABILITY MATRIX --- */
-        @media (max-width: 992px) {
-            .sidebar {
-                position: fixed;
-                left: 0;
-                top: 0;
-                z-index: 10;
-                transform: translateX(-100%);
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .mobile-toggle {
-                display: block;
-            }
-            .workspace-header {
-                padding: 1rem 1.5rem;
-            }
-            .search-wrapper {
-                max-width: 200px;
-            }
-            .content-viewscreen {
-                padding: 1.5rem;
-            }
-            .knowledge-card {
-                padding: 1.5rem;
-            }
-        }
+        /* Flashcard flip custom classes */
+        .perspective { perspective: 1000px; }
+        .preserve-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
 
-    <div id="canvas-ambient-container"></div>
+    <!-- Sticky Top Navigation Header -->
+    <header class="sticky top-0 z-50 bg-indigo-900 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-brain text-2xl text-pink-400 animate-pulse"></i>
+                <span class="font-bold text-xl tracking-tight">NeuroMastery</span>
+            </div>
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex space-x-6 text-sm font-medium">
+                <a href="#about" class="hover:text-pink-300 transition-colors">About</a>
+                <a href="#neurologist" class="hover:text-pink-300 transition-colors">The Neurologist</a>
+                <a href="#anatomy" class="hover:text-pink-300 transition-colors">Anatomy</a>
+                <a href="#cellular" class="hover:text-pink-300 transition-colors">Cellular</a>
+                <a href="#clinical" class="hover:text-pink-300 transition-colors">Clinical</a>
+                <a href="#practice" class="bg-pink-500 px-3 py-1.5 rounded-md hover:bg-pink-600 transition-colors">Practice Portal</a>
+            </nav>
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- Mobile Dropdown Nav -->
+        <div id="mobile-menu" class="hidden md:hidden bg-indigo-950 px-4 pt-2 pb-4 space-y-2 border-t border-indigo-800">
+            <a href="#about" class="block py-2 text-slate-200 hover:text-white">About</a>
+            <a href="#neurologist" class="block py-2 text-slate-200 hover:text-white">The Neurologist</a>
+            <a href="#anatomy" class="block py-2 text-slate-200 hover:text-white">Anatomy</a>
+            <a href="#cellular" class="block py-2 text-slate-200 hover:text-white">Cellular</a>
+            <a href="#clinical" class="block py-2 text-slate-200 hover:text-white">Clinical</a>
+            <a href="#practice" class="block py-2 text-pink-300 font-bold">Practice Portal</a>
+        </div>
+    </header>
 
-    <div class="app-container">
-        
-        <aside class="sidebar" id="app-sidebar">
-            <div class="sidebar-header">
-                <div class="quran-header-verse">رَّبِّ زِدْنِي عِلْمًا</div>
-                <div class="quran-header-translation">"My Lord, increase me in knowledge"</div>
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+
+        <!-- Dedication Section -->
+        <section id="about" class="bg-gradient-to-r from-indigo-800 to-indigo-950 text-white rounded-2xl p-8 md:p-12 shadow-xl border-b-4 border-pink-500 relative overflow-hidden">
+            <div class="absolute right-0 top-0 opacity-10 text-9xl transform translate-x-12 -translate-y-12">
+                <i class="fa-solid fa-heart"></i>
+            </div>
+            <div class="max-w-3xl">
+                <span class="bg-pink-500/20 text-pink-300 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-pink-500/30">Created with Love & Care</span>
+                <h1 class="text-3xl md:text-5xl font-black mt-4 mb-6 tracking-tight leading-tight">The Ultimate Neurology Blueprint</h1>
+                <p class="text-indigo-200 text-lg leading-relaxed italic border-l-4 border-pink-400 pl-4">
+                    "This platform was built with the utmost care, designed to support your journey through the fascinating world of neuroscience. Every diagram, case study, and breakdown is here to help you excel, understand, and master the complexities of the human brain."
+                </p>
+            </div>
+        </section>
+
+        <!-- Comprehensive Neurologist Spotlight Section -->
+        <section id="neurologist" class="bg-white rounded-2xl p-6 md:p-10 shadow-sm border border-slate-200">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="p-3 bg-teal-50 text-teal-600 rounded-lg"><i class="fa-solid fa-user-doctor text-2xl"></i></div>
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900">The Neurologist: Profession, Practice, & Core Scope</h2>
+                    <p class="text-sm text-slate-500">Everything you need to know about what a neurologist is and does.</p>
+                </div>
             </div>
             
-            <nav class="nav-scroller">
-                <div class="category-group">
-                    <div class="category-title">1. Neuroanatomy</div>
-                    <button class="nav-item active" onclick="loadArticle('cortical-localization')">Cortical Localization</button>
-                    <button class="nav-item" onclick="loadArticle('basal-ganglia')">Basal Ganglia Loops</button>
-                    <button class="nav-item" onclick="loadArticle('brainstem-nuclei')">Brainstem & Cranial Nerves</button>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 space-y-4">
+                    <h3 class="text-lg font-bold text-slate-800">What is a Neurologist?</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        A **neurologist** is a highly specialized medical doctor who diagnoses, treats, and manages disorders affecting the **Central Nervous System (CNS)**—which includes the brain and spinal cord—and the **Peripheral Nervous System (PNS)**, which covers nerves and neuromuscular junctions.
+                    </p>
+                    <p class="text-slate-600 leading-relaxed">
+                        Unlike neurosurgeons, neurologists do not perform brain or spinal surgeries. Instead, they focus on advanced medical management, complex clinical evaluations, neurodiagnostic interpretations, and targeted pharmacological therapies.
+                    </p>
+                    
+                    <h3 class="text-lg font-bold text-slate-800 mt-6">The 6 Core Components of a Complete Neurological Examination</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                            <h4 class="font-bold text-slate-700 text-sm"><span class="text-indigo-600 mr-2">1.</span> Mental Status Exam</h4>
+                            <p class="text-xs text-slate-500 mt-1">Assesses orientation (time, place, person), attention, processing speeds, memory, and general executive function.</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                            <h4 class="font-bold text-slate-700 text-sm"><span class="text-indigo-600 mr-2">2.</span> Cranial Nerve Assessment</h4>
+                            <p class="text-xs text-slate-500 mt-1">Tests all 12 pairs of cranial nerves to rule out brainstem pathology, pupillary anomalies, or facial palsy.</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                            <h4 class="font-bold text-slate-700 text-sm"><span class="text-indigo-600 mr-2">3.</span> Motor System Review</h4>
+                            <p class="text-xs text-slate-500 mt-1">Evaluates muscle tone, strength gradients across muscle groups (graded 0 to 5), and flags atrophy or tremors.</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                            <h4 class="font-bold text-slate-700 text-sm"><span class="text-indigo-600 mr-2">4.</span> Sensory Mapping</h4>
+                            <p class="text-xs text-slate-500 mt-1">Examines how the peripheral nerves perceive pain, light touch, temperature variations, and vibration tracking.</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                            <h4 class="font-bold text-slate-700 text-sm"><span class="text-indigo-600 mr-2">5.</span> Deep Tendon Reflexes</h4>
+                            <p class="text-xs text-slate-500 mt-1">Tests points like the patellar and bicep tendons to identify signs of upper or lower motor neuron issues.</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                            <h4 class="font-bold text-slate-700 text-sm"><span class="text-indigo-600 mr-2">6.</span> Coordination, Balance & Gait</h4>
+                            <p class="text-xs text-slate-500 mt-1">Uses tests like the finger-to-nose and Romberg tests to check cerebellar status and stability while walking.</p>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="category-group">
-                    <div class="category-title">2. Clinical Pathology</div>
-                    <button class="nav-item" onclick="loadArticle('stroke-syndromes')">Cerebrovascular Strokes</button>
-                    <button class="nav-item" onclick="loadArticle('epilepsy-classification')">Epilepsy Classification</button>
-                    <button class="nav-item" onclick="loadArticle('neurodegenerative')">Neurodegenerative Diseases</button>
-                    <button class="nav-item" onclick="loadArticle('demyelinating')">Demyelinating Disorders</button>
-                    <button class="nav-item" onclick="loadArticle('neuromuscular-junction')">Neuromuscular Junction</button>
-                </div>
-
-                <div class="category-group">
-                    <div class="category-title">3. Diagnostics & Therapeutics</div>
-                    <button class="nav-item" onclick="loadArticle('neuroradiology')">Neuroradiology Interpretation</button>
-                    <button class="nav-item" onclick="loadArticle('neuropharmacology')">Neuropharmacology Index</button>
-                </div>
-
-                <div class="category-group">
-                    <div class="category-title">4. Clinical Tools</div>
-                    <button class="nav-item" onclick="loadArticle('aspects-calc')">ASPECTS Counter</button>
-                    <button class="nav-item" onclick="loadArticle('nmj-wizard')">NMJ Differential Wizard</button>
-                </div>
-            </nav>
-        </aside>
-
-        <main class="workspace">
-            <header class="workspace-header">
-                <button class="mobile-toggle" onclick="toggleSidebarMenu()">☰</button>
                 
-                <div class="search-wrapper">
-                    <input type="text" id="global-search" class="search-input" placeholder="Search parameters (e.g., stroke, LVO, ASPECTS, MuSK)..." oninput="executeSearch()">
-                    <div id="search-results-dropdown" class="search-dropdown"></div>
+                <div class="bg-indigo-50/50 p-6 rounded-xl border border-indigo-100 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-indigo-950 text-base mb-3"><i class="fa-solid fa-graduation-cap mr-2"></i>Neurological Subspecialties</h3>
+                        <p class="text-xs text-indigo-900/80 mb-4">Neurologists can complete specialized fellowships to focus on narrow clinical areas:</p>
+                        <ul class="space-y-2.5 text-xs text-slate-700">
+                            <li><strong class="text-indigo-950">Vascular Neurology:</strong> Specializes in stroke evaluation and prevention.</li>
+                            <li><strong class="text-indigo-950">Epileptology:</strong> Focuses explicitly on severe, drug-resistant seizure disorders.</li>
+                            <li><strong class="text-indigo-950">Movement Disorders:</strong> Manages Parkinson's, tremors, and Huntington's disease.</li>
+                            <li><strong class="text-indigo-950">Neuromuscular Medicine:</strong> Diagnoses peripheral nerve and muscle conditions like ALS or Myasthenia Gravis.</li>
+                            <li><strong class="text-indigo-950">Neuro-Oncology:</strong> Treats primary tumors of the brain and spine.</li>
+                        </ul>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-indigo-100/60 text-center">
+                        <span class="text-xs text-indigo-600 font-bold bg-indigo-100/80 px-3 py-1 rounded-full"><i class="fa-solid fa-stethoscope mr-1"></i> Core Medicine Pillar</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 1: Anatomy -->
+        <section id="anatomy" class="space-y-8">
+            <div class="flex items-center space-x-3">
+                <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg"><i class="fa-solid fa-map text-2xl"></i></div>
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900">🗺️ Module 1: Ultimate Neuroanatomy</h2>
+                    <p class="text-sm text-slate-500">The Geography of the Brain</p>
+                </div>
+            </div>
+
+            <!-- 1. The Cerebrum & The Four Lobes -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center"><span class="w-2 h-6 bg-pink-500 rounded mr-2"></span>1. The Cerebrum & The Four Lobes</h3>
+                <p class="text-slate-600">The cerebrum is the largest part of the brain and is divided into two hemispheres and four distinct lobes, each responsible for unique functions.</p>
+
+                <!-- High-Resolution CSS Rendered Schematic Lobe Map -->
+                <div class="bg-slate-900 text-white rounded-xl p-4 md:p-8 flex flex-col items-center justify-center relative overflow-hidden min-h-[300px]">
+                    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-900 to-slate-900 z-0"></div>
+                    
+                    <div class="z-10 text-center mb-6">
+                        <span class="text-xs font-semibold bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 px-3 py-1 rounded-full uppercase tracking-wider">Functional Visualization Map</span>
+                        <h4 class="text-sm text-slate-400 mt-2">Interactive Schematic representation of the four lobes and specialized key zones</h4>
+                    </div>
+
+                    <!-- Brain Graphic Outline Layout Representation -->
+                    <div class="z-10 grid grid-cols-2 gap-4 w-full max-w-2xl text-center text-xs font-bold">
+                        <div class="bg-blue-600/20 text-blue-300 border border-blue-500/40 p-4 rounded-xl backdrop-blur-sm shadow-sm">
+                            <div class="text-sm uppercase tracking-wide text-blue-400 mb-1">Frontal Lobe</div>
+                            <p class="font-normal text-[11px] text-slate-300">Executive Action & Prefrontal Cortex. Contains **Broca's Area** for motor speech production.</p>
+                        </div>
+                        <div class="bg-yellow-600/20 text-yellow-300 border border-yellow-500/40 p-4 rounded-xl backdrop-blur-sm shadow-sm">
+                            <div class="text-sm uppercase tracking-wide text-yellow-400 mb-1">Parietal Lobe</div>
+                            <p class="font-normal text-[11px] text-slate-300">Somatosensory Processing. Integrates sensory parameters like touch, temperature, and spatial orientation.</p>
+                        </div>
+                        <div class="bg-emerald-600/20 text-emerald-300 border border-emerald-500/40 p-4 rounded-xl backdrop-blur-sm shadow-sm">
+                            <div class="text-sm uppercase tracking-wide text-emerald-400 mb-1">Temporal Lobe</div>
+                            <p class="font-normal text-[11px] text-slate-300">Auditory Processing & Memory Architectures. Houses **Wernicke's Area** and the deep Hippocampus.</p>
+                        </div>
+                        <div class="bg-pink-600/20 text-pink-300 border border-pink-500/40 p-4 rounded-xl backdrop-blur-sm shadow-sm">
+                            <div class="text-sm uppercase tracking-wide text-pink-400 mb-1">Occipital Lobe</div>
+                            <p class="font-normal text-[11px] text-slate-300">Primary Visual Interpretation. Maps color matrix inputs, object tracking, and image structure decoding.</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div style="font-size: 0.85rem; letter-spacing: 1px; color: var(--text-secondary); font-weight:600; text-align: right;" id="breadcrumb-indicator">
-                    NEUROANATOMY / CORTICAL LOCALIZATION
+                <!-- Responsive Lobe Matrix Table -->
+                <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
+                                <th class="p-4">Lobe</th>
+                                <th class="p-4">Primary Functions</th>
+                                <th class="p-4">Key Specialized Areas</th>
+                                <th class="p-4">What Happens if Damaged?</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 text-slate-600">
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="p-4 font-bold text-blue-600">Frontal Lobe</td>
+                                <td class="p-4">Executive function, decision-making, personality, motor control.</td>
+                                <td class="p-4"><strong class="text-slate-800">Broca’s Area</strong> (Speech production), Prefrontal Cortex.</td>
+                                <td class="p-4">Personality shifts, Expressive Aphasia (unable to motorically produce words).</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="p-4 font-bold text-yellow-600">Parietal Lobe</td>
+                                <td class="p-4">Sensory perception (taste, touch, temperature, pain), spatial awareness.</td>
+                                <td class="p-4">Somatosensory Cortex.</td>
+                                <td class="p-4">Hemispatial neglect (completely ignoring one side of space or body).</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="p-4 font-bold text-emerald-600">Temporal Lobe</td>
+                                <td class="p-4">Auditory processing, memory encoding, language comprehension.</td>
+                                <td class="p-4"><strong class="text-slate-800">Wernicke’s Area</strong> (Language comprehension), Hippocampus.</td>
+                                <td class="p-4">Receptive Aphasia (fluent speech lacking any real meaning), severe memory deficits.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="p-4 font-bold text-pink-600">Occipital Lobe</td>
+                                <td class="p-4">Visual processing (color, shape, recognition, motion tracking).</td>
+                                <td class="p-4">Primary Visual Cortex.</td>
+                                <td class="p-4">Cortical blindness, visual agnosia, or vivid hallucinations.</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </header>
+            </div>
 
-            <section class="content-viewscreen">
-                <div class="knowledge-card" id="render-target"></div>
-            </section>
-        </main>
-    </div>
+            <!-- 2. The Deep Brain Structures -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center"><span class="w-2 h-6 bg-indigo-500 rounded mr-2"></span>2. The Deep Brain Structures (The Limbic System & Diencephalon)</h3>
+                <p class="text-slate-600">Deep beneath the outer cortex lies the emotional and homeostatic core of the brain.</p>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-5 bg-indigo-50/40 border border-indigo-100 rounded-xl">
+                        <h4 class="font-bold text-indigo-950 text-base flex items-center"><i class="fa-solid fa-circle-nodes text-indigo-500 mr-2 text-sm"></i>The Thalamus</h4>
+                        <p class="text-sm text-slate-600 mt-2 leading-relaxed">The brain's grand relay station. Every piece of sensory information (except smell) stops here first before being filtered and sent to the cortex.</p>
+                    </div>
+                    <div class="p-5 bg-indigo-50/40 border border-indigo-100 rounded-xl">
+                        <h4 class="font-bold text-indigo-950 text-base flex items-center"><i class="fa-solid fa-sliders text-indigo-500 mr-2 text-sm"></i>The Hypothalamus</h4>
+                        <p class="text-sm text-slate-600 mt-2 leading-relaxed">The master regulator. It maintains systemic homeostasis by controlling body temperature, hunger, thirst, fatigue, circadian rhythms, and the endocrine system via the pituitary gland.</p>
+                    </div>
+                    <div class="p-5 bg-indigo-50/40 border border-indigo-100 rounded-xl">
+                        <h4 class="font-bold text-indigo-950 text-base flex items-center"><i class="fa-solid fa-triangle-exclamation text-indigo-500 mr-2 text-sm"></i>The Amygdala</h4>
+                        <p class="text-sm text-slate-600 mt-2 leading-relaxed">The emotional alarm system. It processes fear, aggression, threat detection, and emotional memories.</p>
+                    </div>
+                    <div class="p-5 bg-indigo-50/40 border border-indigo-100 rounded-xl">
+                        <h4 class="font-bold text-indigo-950 text-base flex items-center"><i class="fa-solid fa-database text-indigo-500 mr-2 text-sm"></i>The Hippocampus</h4>
+                        <p class="text-sm text-slate-600 mt-2 leading-relaxed">The memory architect. Crucial for converting short-term memory into permanent, long-term memory storage.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. The Hindbrain & Brainstem -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center"><span class="w-2 h-6 bg-teal-500 rounded mr-2"></span>3. The Hindbrain & Brainstem (The Life Support System)</h3>
+                
+                <div class="flex flex-col lg:flex-row gap-8 items-start">
+                    <div class="w-full lg:w-1/3 p-6 bg-slate-900 text-white rounded-xl flex flex-col justify-between h-full min-h-[220px]">
+                        <div>
+                            <span class="text-xs uppercase bg-teal-500/20 text-teal-300 border border-teal-500/30 px-2.5 py-1 rounded-md font-bold tracking-wider">Cerebellar Blueprint</span>
+                            <h4 class="text-lg font-bold mt-3 mb-2 text-teal-400">The Cerebellum ("Little Brain")</h4>
+                            <p class="text-xs text-slate-300 leading-relaxed">Coordinates voluntary movements, posture, and balance. It ensures your movements are smooth, fluid, and precise.</p>
+                        </div>
+                        <div class="text-[11px] text-slate-500 mt-4">Location: Inferior posterior cranial fossa.</div>
+                    </div>
+
+                    <div class="w-full lg:w-2/3 space-y-4">
+                        <h4 class="font-bold text-slate-800 text-base">The Brainstem Base Components</h4>
+                        <p class="text-sm text-slate-600">Composed of three key parts that manage involuntary actions essential for survival:</p>
+                        
+                        <div class="space-y-3">
+                            <div class="p-4 border border-slate-200 rounded-xl hover:border-slate-300 transition-colors">
+                                <span class="text-xs font-bold px-2 py-0.5 bg-slate-100 text-slate-700 rounded mr-2">A</span>
+                                <strong class="text-slate-800 text-sm">Midbrain:</strong>
+                                <p class="text-xs text-slate-500 inline ml-1">Controls vision, hearing, motor control pathways, and regular sleep/wake cycles.</p>
+                            </div>
+                            <div class="p-4 border border-slate-200 rounded-xl hover:border-slate-300 transition-colors">
+                                <span class="text-xs font-bold px-2 py-0.5 bg-slate-100 text-slate-700 rounded mr-2">B</span>
+                                <strong class="text-slate-800 text-sm">Pons:</strong>
+                                <p class="text-xs text-slate-500 inline ml-1">Relays signals between the cerebrum and cerebellum; handles sleep, respiration rhythms, and autonomic swallowing.</p>
+                            </div>
+                            <div class="p-4 border border-indigo-100 bg-indigo-50/20 rounded-xl">
+                                <span class="text-xs font-bold px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded mr-2">C</span>
+                                <strong class="text-slate-900 text-sm">Medulla Oblongata (Critical Core):</strong>
+                                <p class="text-xs text-indigo-950 inline ml-1 font-medium">The most vital part of the brainstem. It automatically regulates real-time heart rate, systemic blood pressure, and primary respiratory mechanics.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 2: Cellular Neurology -->
+        <section id="cellular" class="space-y-8">
+            <div class="flex items-center space-x-3">
+                <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg"><i class="fa-solid fa-microscope text-2xl"></i></div>
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900">🧪 Module 2: Cellular Neurology</h2>
+                    <p class="text-sm text-slate-500">The Communication Network</p>
+                </div>
+            </div>
+
+            <!-- 1. Anatomy of a Neuron -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center"><span class="w-2 h-6 bg-blue-500 rounded mr-2"></span>1. Anatomy of a Neuron</h3>
+                <p class="text-slate-600">The neuron is the fundamental working structural unit of the entire nervous system.</p>
+
+                <!-- Responsive Neuron Component Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center text-xs">
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                        <div class="font-bold text-indigo-600 mb-1">Dendrites</div>
+                        <div class="text-slate-500 text-[11px]">Branch-like extensions that receive incoming inputs.</div>
+                    </div>
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                        <div class="font-bold text-indigo-600 mb-1">Soma (Cell Body)</div>
+                        <div class="text-slate-500 text-[11px]">Contains the nucleus and direct metabolic machinery.</div>
+                    </div>
+                    <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl col-span-2 md:col-span-1">
+                        <div class="font-bold text-indigo-600 mb-1">Axon & Myelin</div>
+                        <div class="text-slate-500 text-[11px]">Insulated cable propagating impulses rapidly over distance.</div>
+                    </div>
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                        <div class="font-bold text-indigo-600 mb-1">Nodes of Ranvier</div>
+                        <div class="text-slate-500 text-[11px]">Unmyelinated gaps regenerating impulse potential.</div>
+                    </div>
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                        <div class="font-bold text-indigo-600 mb-1">Axon Terminals</div>
+                        <div class="text-slate-500 text-[11px]">Specialized ends where chemical neurotransmitters bundle.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Chemical Synapse & Neurotransmitters -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center"><span class="w-2 h-6 bg-purple-500 rounded mr-2"></span>2. The Chemical Synapse & Neurotransmitters</h3>
+                <p class="text-slate-600">When an electrical action potential reaches the end of an axon, it crosses the tiny synaptic cleft using specialized chemical messengers:</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="p-4 border-t-4 border-blue-500 bg-slate-50 rounded-xl shadow-xs">
+                        <h4 class="font-bold text-slate-900 text-sm">Glutamate</h4>
+                        <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-1.5 py-0.5 rounded uppercase tracking-wider block my-1 w-max">Excitatory</span>
+                        <p class="text-xs text-slate-500 mt-1">Essential for learning, neural plasticity, and long-term potentiation.</p>
+                    </div>
+                    <div class="p-4 border-t-4 border-emerald-500 bg-slate-50 rounded-xl shadow-xs">
+                        <h4 class="font-bold text-slate-900 text-sm">GABA</h4>
+                        <span class="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-1.5 py-0.5 rounded uppercase tracking-wider block my-1 w-max">Inhibitory</span>
+                        <p class="text-xs text-slate-500 mt-1">Calms the central nervous system down; main target for anxiolytic medications.</p>
+                    </div>
+                    <div class="p-4 border-t-4 border-purple-500 bg-slate-50 rounded-xl shadow-xs">
+                        <h4 class="font-bold text-slate-900 text-sm">Dopamine</h4>
+                        <span class="text-[10px] bg-purple-100 text-purple-700 font-bold px-1.5 py-0.5 rounded uppercase tracking-wider block my-1 w-max">Modulatory</span>
+                        <p class="text-xs text-slate-500 mt-1">Drives reward pathways, motivation, and critical motor control loops.</p>
+                    </div>
+                    <div class="p-4 border-t-4 border-pink-500 bg-slate-50 rounded-xl shadow-xs">
+                        <h4 class="font-bold text-slate-900 text-sm">Serotonin</h4>
+                        <span class="text-[10px] bg-pink-100 text-pink-700 font-bold px-1.5 py-0.5 rounded uppercase tracking-wider block my-1 w-max">Regulatory</span>
+                        <p class="text-xs text-slate-500 mt-1">Regulates systemic mood, sleep cycles, architecture, and appetite parameters.</p>
+                    </div>
+                    <div class="p-4 border-t-4 border-amber-500 bg-slate-50 rounded-xl shadow-xs">
+                        <h4 class="font-bold text-slate-900 text-sm">Acetylcholine</h4>
+                        <span class="text-[10px] bg-amber-100 text-amber-700 font-bold px-1.5 py-0.5 rounded uppercase tracking-wider block my-1 w-max">Neuromuscular</span>
+                        <p class="text-xs text-slate-500 mt-1">Activates muscles and plays a major role in cognition and memory formation.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 3: Clinical Neurology -->
+        <section id="clinical" class="space-y-8">
+            <div class="flex items-center space-x-3">
+                <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg"><i class="fa-solid fa-hospital text-2xl"></i></div>
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900">🏥 Module 3: Clinical Neurology</h2>
+                    <p class="text-sm text-slate-500">Diseases & Diagnostics</p>
+                </div>
+            </div>
+
+            <!-- 1. Major Disorders -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center"><span class="w-2 h-6 bg-red-500 rounded mr-2"></span>1. Major Neurological Disorders</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-5 border border-slate-200 rounded-xl space-y-2 bg-slate-50/50">
+                        <h4 class="font-bold text-slate-900 text-base">Stroke (Ischemic vs. Hemorrhagic)</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            <span class="font-semibold text-slate-800">Ischemic:</span> A blood clot blocks blood flow to a specific brain region, starving tissue of oxygen.<br>
+                            <span class="font-semibold text-slate-800">Hemorrhagic:</span> A fragile blood vessel ruptures, causing dangerous bleeding directly into brain tissue.
+                        </p>
+                    </div>
+                    <div class="p-5 border border-slate-200 rounded-xl space-y-2 bg-slate-50/50">
+                        <h4 class="font-bold text-slate-900 text-base">Alzheimer’s Disease</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            A progressive neurodegenerative disease marked by the widespread accumulation of extracellular **Amyloid-beta plaques** and intracellular **Tau neurofibrillary tangles**, leading to global brain atrophy.
+                        </p>
+                    </div>
+                    <div class="p-5 border border-slate-200 rounded-xl space-y-2 bg-slate-50/50">
+                        <h4 class="font-bold text-slate-900 text-base">Parkinson’s Disease</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Loss of dopaminergic neurons in the **Substantia Nigra**. Characterized clinically by resting tremors, lead-pipe rigidity, bradykinesia (slowed movement), and postural instability.
+                        </p>
+                    </div>
+                    <div class="p-5 border border-slate-200 rounded-xl space-y-2 bg-slate-50/50">
+                        <h4 class="font-bold text-slate-900 text-base">Epilepsy</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            A complex condition characterized by recurrent, unprovoked seizures caused by sudden, hypersynchronous bursts of electrical activity within cerebral networks.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Diagnostic Toolkit -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center"><span class="w-2 h-6 bg-slate-800 rounded mr-2"></span>2. The Neurologist's Diagnostic Toolkit</h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="p-4 border border-slate-200 rounded-xl">
+                        <div class="font-bold text-sm text-slate-900 mb-1"><i class="fa-solid fa-magnet mr-1 text-indigo-500"></i> MRI Scan</div>
+                        <p class="text-xs text-slate-500">Uses magnetic fields to generate highly detailed structural configurations of soft tissue pathology.</p>
+                    </div>
+                    <div class="p-4 border border-slate-200 rounded-xl">
+                        <div class="font-bold text-sm text-slate-900 mb-1"><i class="fa-solid fa-bolt-lightning mr-1 text-indigo-500"></i> CT Scan</div>
+                        <p class="text-xs text-slate-500">Rapid, X-ray-based cross-sectional imaging ideal for detecting acute bleeding in emergency trauma or strokes.</p>
+                    </div>
+                    <div class="p-4 border border-slate-200 rounded-xl">
+                        <div class="font-bold text-sm text-slate-900 mb-1"><i class="fa-solid fa-wave-square mr-1 text-indigo-500"></i> EEG</div>
+                        <p class="text-xs text-slate-500">Tracks real-time electrical voltage fluctuations along the scalp to evaluate underlying seizure conditions.</p>
+                    </div>
+                    <div class="p-4 border border-slate-200 rounded-xl">
+                        <div class="font-bold text-sm text-slate-900 mb-1"><i class="fa-solid fa-droplet mr-1 text-indigo-500"></i> Lumbar Puncture</div>
+                        <p class="text-xs text-slate-500">Collects Cerebrospinal Fluid (CSF) from the lower lumbar space to evaluate for bacterial infections or unique autoimmune profiles.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 4: Practice Portal -->
+        <section id="practice" class="space-y-8 bg-indigo-900 text-white rounded-3xl p-6 md:p-10 shadow-xl">
+            <div class="flex items-center space-x-3">
+                <div class="p-3 bg-white/10 text-pink-400 rounded-lg"><i class="fa-solid fa-circle-check text-2xl"></i></div>
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-bold">🛠️ Module 4: Practical Practice Portal</h2>
+                    <p class="text-sm text-indigo-200">Interactive Clinical Study Companion & Active Recall Tools</p>
+                </div>
+            </div>
+
+            <!-- Session 1: Virtual Exam -->
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6">
+                <h3 class="text-lg font-bold text-pink-400 flex items-center"><i class="fa-solid fa-user-injured mr-2"></i> Practice Session 1: The Virtual Neurological Exam</h3>
+                <p class="text-sm text-indigo-100">Review real clinical vignettes. Evaluate presentations and reveal the correct localization diagnostics.</p>
+                
+                <div class="space-y-4">
+                    <!-- Case 1 -->
+                    <div class="bg-indigo-950/60 p-4 rounded-xl border border-white/5 space-y-3">
+                        <span class="text-[10px] bg-pink-500 text-white font-bold px-2 py-0.5 rounded-full uppercase">Case Study #1</span>
+                        <p class="text-xs text-indigo-200 leading-relaxed">A 68-year-old patient arrives at the clinic. Their right hand shakes violently at rest, but the shaking stops when they reach out to grab a cup. They walk with a shuffled gait and struggle to change facial expressions (masked facies).</p>
+                        <button onclick="toggleReveal('reveal-case-1')" class="text-xs bg-indigo-800 text-white font-bold px-3 py-1.5 rounded border border-white/10 hover:bg-indigo-700 transition-colors">Toggle Solution Diagnostic</button>
+                        <div id="reveal-case-1" class="hidden text-xs bg-emerald-950/80 text-emerald-300 p-3 rounded-lg border border-emerald-500/30 mt-2">
+                            <strong>Diagnostic Evaluation:</strong> The **Substantia Nigra** path is failing due to dopaminergic degradation; the standard clinical diagnostic match is **Parkinson's Disease**.
+                        </div>
+                    </div>
+
+                    <!-- Case 2 -->
+                    <div class="bg-indigo-950/60 p-4 rounded-xl border border-white/5 space-y-3">
+                        <span class="text-[10px] bg-pink-500 text-white font-bold px-2 py-0.5 rounded-full uppercase">Case Study #2</span>
+                        <p class="text-xs text-indigo-200 leading-relaxed">A 34-year-old patient suddenly loses the ability to speak coherent sentences. They can say words fluently, but the words are put together randomly ("word salad") and make no sense. They seem entirely unaware that they aren't making sense.</p>
+                        <button onclick="toggleReveal('reveal-case-2')" class="text-xs bg-indigo-800 text-white font-bold px-3 py-1.5 rounded border border-white/10 hover:bg-indigo-700 transition-colors">Toggle Solution Diagnostic</button>
+                        <div id="reveal-case-2" class="hidden text-xs bg-emerald-950/80 text-emerald-300 p-3 rounded-lg border border-emerald-500/30 mt-2">
+                            <strong>Diagnostic Evaluation:</strong> Severe localized compromise within **Wernicke’s Area** located inside the dominant temporal lobe arch, confirming **Receptive Aphasia**.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Session 2: Active Recall Cards -->
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6">
+                <h3 class="text-lg font-bold text-pink-400 flex items-center"><i class="fa-solid fa-layer-group mr-2"></i> Practice Session 2: Active Recall Flashcard Deck</h3>
+                <p class="text-sm text-indigo-100">Click on any card shell profile below to instantly flip it and review its core high-yield board study fact.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Card 1 -->
+                    <div class="perspective h-40 cursor-pointer" onclick="this.querySelector('.preserve-3d').classList.toggle('rotate-y-180')">
+                        <div class="preserve-3d relative w-full h-full duration-500">
+                            <!-- Front -->
+                            <div class="absolute inset-0 bg-indigo-950 border border-white/10 rounded-xl p-4 flex flex-col justify-between backface-hidden shadow-md">
+                                <span class="text-[9px] tracking-widest text-indigo-400 font-bold uppercase">Neurochemistry</span>
+                                <p class="text-xs font-medium text-center text-white my-auto">What is the principal inhibitory neurotransmitter in the central nervous system?</p>
+                                <span class="text-[10px] text-pink-400 text-right"><i class="fa-solid fa-rotate"></i> Tap to Flip</span>
+                            </div>
+                            <!-- Back -->
+                            <div class="absolute inset-0 bg-pink-950 border border-pink-500/30 rounded-xl p-4 flex flex-col justify-between backface-hidden rotate-y-180 shadow-md">
+                                <span class="text-[9px] tracking-widest text-pink-400 font-bold uppercase">Answer Core</span>
+                                <p class="text-sm font-bold text-center text-pink-200 my-auto">GABA<br><span class="text-xs font-normal text-pink-300/80">(Gamma-Aminobutyric Acid)</span></p>
+                                <span class="text-[10px] text-indigo-400 text-right">Verified Core Fact</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="perspective h-40 cursor-pointer" onclick="this.querySelector('.preserve-3d').classList.toggle('rotate-y-180')">
+                        <div class="preserve-3d relative w-full h-full duration-500">
+                            <!-- Front -->
+                            <div class="absolute inset-0 bg-indigo-950 border border-white/10 rounded-xl p-4 flex flex-col justify-between backface-hidden shadow-md">
+                                <span class="text-[9px] tracking-widest text-indigo-400 font-bold uppercase">Cranial Nerves</span>
+                                <p class="text-xs font-medium text-center text-white my-auto">Damage to Cranial Nerve III (Oculomotor) results in what classic eye structural presentation?</p>
+                                <span class="text-[10px] text-pink-400 text-right"><i class="fa-solid fa-rotate"></i> Tap to Flip</span>
+                            </div>
+                            <!-- Back -->
+                            <div class="absolute inset-0 bg-pink-950 border border-pink-500/30 rounded-xl p-4 flex flex-col justify-between backface-hidden rotate-y-180 shadow-md">
+                                <span class="text-[9px] tracking-widest text-pink-400 font-bold uppercase">Answer Core</span>
+                                <p class="text-sm font-bold text-center text-pink-200 my-auto">"Down and Out"<br><span class="text-xs font-normal text-pink-300/80">eye deviation accompanied by distinct pupillary dilation.</span></p>
+                                <span class="text-[10px] text-indigo-400 text-right">Verified Core Fact</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="perspective h-40 cursor-pointer" onclick="this.querySelector('.preserve-3d').classList.toggle('rotate-y-180')">
+                        <div class="preserve-3d relative w-full h-full duration-500">
+                            <!-- Front -->
+                            <div class="absolute inset-0 bg-indigo-950 border border-white/10 rounded-xl p-4 flex flex-col justify-between backface-hidden shadow-md">
+                                <span class="text-[9px] tracking-widest text-indigo-400 font-bold uppercase">CSF Dynamics</span>
+                                <p class="text-xs font-medium text-center text-white my-auto">What localized deep brain structure produces Cerebrospinal Fluid (CSF)?</p>
+                                <span class="text-[10px] text-pink-400 text-right"><i class="fa-solid fa-rotate"></i> Tap to Flip</span>
+                            </div>
+                            <!-- Back -->
+                            <div class="absolute inset-0 bg-pink-950 border border-pink-500/30 rounded-xl p-4 flex flex-col justify-between backface-hidden rotate-y-180 shadow-md">
+                                <span class="text-[9px] tracking-widest text-pink-400 font-bold uppercase">Answer Core</span>
+                                <p class="text-sm font-bold text-center text-pink-200 my-auto">The Choroid Plexus<br><span class="text-xs font-normal text-pink-300/80">located dynamically within the brain's ventricles.</span></p>
+                                <span class="text-[10px] text-indigo-400 text-right">Verified Core Fact</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Session 3: Interactive Challenge Station -->
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6">
+                <h3 class="text-lg font-bold text-pink-400 flex items-center"><i class="fa-solid fa-gamepad mr-2"></i> Practice Session 3: Deep Brain Interactive Identification Station</h3>
+                <p class="text-sm text-indigo-100">Match the deep anatomy structure identifier pins below to find their true physiological name mapping.</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+                    <!-- Anatomy Interactive Pin Column Setup -->
+                    <div class="lg:col-span-2 bg-indigo-950/80 border border-white/10 p-4 rounded-xl flex flex-col space-y-2">
+                        <span class="text-[10px] text-indigo-400 uppercase tracking-widest font-bold">Anatomical Training Nodes</span>
+                        
+                        <!-- Station Interactive Quiz Selector Item 1 -->
+                        <div class="p-3 bg-white/5 rounded-lg flex items-center justify-between border border-white/5">
+                            <span class="text-xs text-indigo-200"><strong class="text-pink-400 mr-2">[Node Alpha]</strong> Grand relay post sorting incoming sensory paths except olfaction.</span>
+                            <select id="node-alpha-sel" onchange="checkNodeAnswer('node-alpha-sel', 'Thalamus')" class="bg-indigo-900 border border-white/20 rounded p-1 text-xs text-white focus:outline-none">
+                                <option value="">Select Target...</option>
+                                <option value="Pons">Pons</option>
+                                <option value="Thalamus">Thalamus</option>
+                                <option value="Cerebellum">Cerebellum</option>
+                                <option value="Corpus Callosum">Corpus Callosum</option>
+                            </select>
+                        </div>
+
+                        <!-- Station Interactive Quiz Selector Item 2 -->
+                        <div class="p-3 bg-white/5 rounded-lg flex items-center justify-between border border-white/5">
+                            <span class="text-xs text-indigo-200"><strong class="text-pink-400 mr-2">[Node Beta]</strong> Bridges signals between cerebrum lobes and the cerebellum.</span>
+                            <select id="node-beta-sel" onchange="checkNodeAnswer('node-beta-sel', 'Pons')" class="bg-indigo-900 border border-white/20 rounded p-1 text-xs text-white focus:outline-none">
+                                <option value="">Select Target...</option>
+                                <option value="Pons">Pons</option>
+                                <option value="Thalamus">Thalamus</option>
+                                <option value="Cerebellum">Cerebellum</option>
+                                <option value="Corpus Callosum">Corpus Callosum</option>
+                            </select>
+                        </div>
+
+                        <!-- Station Interactive Quiz Selector Item 3 -->
+                        <div class="p-3 bg-white/5 rounded-lg flex items-center justify-between border border-white/5">
+                            <span class="text-xs text-indigo-200"><strong class="text-pink-400 mr-2">[Node Gamma]</strong> Large tracking bundle bridging the left and right hemispheres.</span>
+                            <select id="node-gamma-sel" onchange="checkNodeAnswer('node-gamma-sel', 'Corpus Callosum')" class="bg-indigo-900 border border-white/20 rounded p-1 text-xs text-white focus:outline-none">
+                                <option value="">Select Target...</option>
+                                <option value="Pons">Pons</option>
+                                <option value="Thalamus">Thalamus</option>
+                                <option value="Cerebellum">Cerebellum</option>
+                                <option value="Corpus Callosum">Corpus Callosum</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Performance Scoreboard Status box -->
+                    <div class="bg-indigo-950 p-6 rounded-xl border border-white/10 text-center space-y-3">
+                        <i class="fa-solid fa-award text-3xl text-amber-400"></i>
+                        <h4 class="text-sm font-bold">Identification Progress</h4>
+                        <p class="text-xs text-indigo-300">Select options inside the selector fields to live-test verification states.</p>
+                        <div id="quiz-status-feedback" class="text-xs font-bold text-pink-400 mt-2">0 / 3 Correctly Matched</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-indigo-950 text-indigo-300 text-xs py-8 mt-16 border-t border-indigo-900">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="font-medium text-slate-400">&copy; 2026 NeuroMastery Core Platform Architecture. Handcrafted with Care.</p>
+            <p class="text-slate-500">Optimized for clinical neuroscience training curriculum reviews across mobile, tablet, and desktop views.</p>
+        </div>
+    </footer>
+
+    <!-- Core Javascript Code Logic Controller -->
     <script>
-        /* =========================================================================
-           A. MASTER MEDICAL METADATA DATABASE
-           ========================================================================= */
-        const NEURO_DATABASE = {
-            'cortical-localization': {
-                title: "Functional Cortical Localization Profiles",
-                category: "Neuroanatomy",
-                content: `
-                    <p class="doc-text">Cortical mapping serves as the clinical standard foundation for spatial symptom identification. Damage cleanly isolates predictive behavioral or physical motor performance drop traits based on specific locations.</p>
-                    
-                    <div class="doc-section-title">The Motor & Sensory Strips</div>
-                    <ul class="medical-list">
-                        <li><strong>Primary Motor Cortex (Brodmann Area 4):</strong> Situated directly in the precentral gyrus. Utilizes an inverted somatotopic presentation framework (Motor Homunculus), prioritizing massive hand and speech manipulation neural volume. Lesions yield immediate contralateral flaccid paralysis tracking to eventual hyperreflexic spasticity.</li>
-                        <li><strong>Primary Somatosensory Cortex (Brodmann Areas 1, 2, 3):</strong> Set inside the postcentral gyrus region. Manages incoming contralateral discriminative touch, vibration, and position senses.</li>
-                    </ul>
-
-                    <div class="doc-section-title">Dominant Language Coordinate Centers</div>
-                    <ul class="medical-list">
-                        <li><strong>Broca’s Complex Area (BA 44, 45):</strong> Positioned safely within the inferior frontal gyrus pars opercularis/triangularis tracking. Oversees speech construction. Injury prevents speech flow while comprehension remains completely intact.</li>
-                        <li><strong>Wernicke’s Coordinate Hub (BA 22):</strong> Located in the posterior superior temporal aspect. Manages speech processing translation. Injury triggers completely fluent but empty speech execution ("word salad").</li>
-                    </ul>
-                `
-            },
-            'basal-ganglia': {
-                title: "Basal Ganglia Motor Regulation Loops",
-                category: "Neuroanatomy",
-                content: `
-                    <p class="doc-text">The basal ganglia modulate motor initiation via a precise structural balancing mechanism of parallel pathways running through the striatum, globus pallidus, and subthalamic structures.</p>
-                    <div class="doc-section-title">The Direct Pathway (Pro-Movement)</div>
-                    <p class="doc-text">Cortex excites Striatum → Striatum inhibits Globus Pallidus internal segment (GPi) and Substantia Nigra pars reticulata (SNr) → Disinhibits the Thalamus → Excites the Cortex, initiating voluntary movement.</p>
-                    <div class="doc-section-title">The Indirect Pathway (Anti-Movement)</div>
-                    <p class="doc-text">Cortex excites Striatum → Inhibits Globus Pallidus external segment (GPe) → Disinhibits Subthalamic Nucleus (STN) → STN excites GPi/SNr → Inhibits Thalamus → Reduces motor output.</p>
-                `
-            },
-            'brainstem-nuclei': {
-                title: "Brainstem Topography & Cranial Nerve Nuclei",
-                category: "Neuroanatomy",
-                content: `
-                    <p class="doc-text">The anatomical distribution of cranial nerve nuclei follows the strict rules of brainstem embryology: motor nuclei lie medially, while sensory nuclei reside laterally along the sulcus limitans.</p>
-                    <div class="doc-section-title">Pre-Midbrain and Midbrain Landmarks</div>
-                    <p class="doc-text">Houses CN III (Oculomotor) and CN IV (Trochlear) nuclei. Also features the superior colliculus (visual reflexes) and inferior colliculus (auditory relay processing).</p>
-                    <div class="doc-section-title">The Rule of 4 for Brainstem Localization</div>
-                    <p class="doc-text">There are 4 cranial nerves in the Midbrain (CN I-IV), 4 in the Pons (CN V-VIII), and 4 in the Medulla (CN IX-XII). The 4 motor nerves that divide equally into 12 are all medial (III, IV, VI, XII).</p>
-                `
-            },
-            'stroke-syndromes': {
-                title: "Advanced Neurovascular Stroke Syndromes",
-                category: "Clinical Pathology",
-                content: `
-                    <p class="doc-text">Ischemic cerebrovascular accidents present with highly predictable deficits based on the specific vascular tree occluded. Rapid clinical localization is vital for calculating the NIH Stroke Scale (NIHSS) and determining eligibility for reperfusion therapy (tPA vs. Mechanical Thrombectomy).</p>
-                    
-                    <div class="doc-section-title">1. Anterior Circulation Large Vessel Occlusions (LVO)</div>
-                    <ul class="medical-list">
-                        <li><strong>Internal Carotid Artery (ICA) T-Occlusion:</strong> Frequently catastrophic. Combines the deficits of both MCA and ACA territories. Presents with profound contralateral hemiplegia, hemisensory loss, global aphasia (if dominant), and homonymous hemianopia, often accompanied by altered consciousness due to massive cerebral edema.</li>
-                        <li><strong>Middle Cerebral Artery (MCA) M1 Segment:</strong> Complete contralateral hemiplegia and hemisensory loss (face/arm &gt; leg). Gaze deviation favors the side of the infarct (away from the hemiparesis). Dominant hemisphere causes global aphasia; non-dominant causes severe anosognosia (denial of deficit) and left-sided spatial neglect.</li>
-                        <li><strong>Anterior Cerebral Artery (ACA):</strong> Contralateral sensory and motor impairments localized predominantly to the lower extremity. Accompanied by primitive reflexes (grasp/suck), urinary incontinence, and abulia (severe lack of initiative or speech production) due to frontal lobe parasagittal damage.</li>
-                    </ul>
-
-                    <div class="doc-section-title">2. Posterior Circulation & Brainstem Syndromes</div>
-                    <ul class="medical-list">
-                        <li><strong>Lateral Medullary Syndrome (Wallenberg / PICA Occlusion):</strong> 
-                            <br>• <em>Ipsilateral signs:</em> Horner's syndrome (ptosis, miosis, anhidrosis), ataxia (inferior cerebellar peduncle), facial pain/temperature loss (CN V spinal nucleus), and palatal weakness/dysphagia (CN IX/X nucleus ambiguus).
-                            <br>• <em>Contralateral signs:</em> Loss of pain and temperature over the trunk and extremities (spinothalamic tract).
-                        </li>
-                        <li><strong>Medial Medullary Syndrome (Dejerine / ASA Occlusion):</strong> Contralateral spastic hemiparesis (corticospinal tract), contralateral loss of position/vibration sense (medial lemniscus), and ipsilateral tongue deviation *toward* the lesion (CN XII nucleus).</li>
-                        <li><strong>Ventral Midbrain Syndrome (Weber's / PCA Branch Occlusion):</strong> Campylomatic eye positioning (down-and-out eye, fixed dilated pupil, severe ptosis) combined with contralateral hemiparesis (cerebral peduncle damage).</li>
-                    </ul>
-
-                    <div class="doc-section-title">3. Classic Lacunar Infarcts (Small Vessel Disease)</div>
-                    <ul class="medical-list">
-                        <li><strong>Pure Motor Hemiparesis:</strong> Localized to the posterior limb of the internal capsule or basal pons. Pure motor weakness of the contralateral face, arm, and leg without any sensory, visual, or higher cortical deficits.</li>
-                        <li><strong>Pure Sensory Stroke:</strong> Localized to the VPL/VPM nuclei of the thalamus. Completely isolates contralateral numbness or paresthesias across the face, arm, and leg without motor weakness.</li>
-                    </ul>
-                `
-            },
-            'epilepsy-classification': {
-                title: "ILAE Seizure & Epilepsy Classification System",
-                category: "Clinical Pathology",
-                content: `
-                    <p class="doc-text">The International League Against Epilepsy (ILAE) classification system uses a three-level framework: identifying the specific seizure type, determining the overarching epilepsy type, and diagnosing an underlying epilepsy syndrome.</p>
-                    
-                    <div class="doc-section-title">Level 1: Seizure Type Onset Classification</div>
-                    <p class="doc-text">Seizures are fundamentally categorized by their anatomical point of origin within the cerebral networks:</p>
-                    <ul class="medical-list">
-                        <li><strong>Focal Onset:</strong> Originates within networks limited to one cerebral hemisphere. Further sub-classified by awareness:
-                            <br>• <em>Focal Aware Seizure (FAS):</em> Knowledge of self and environment is completely preserved during the event.
-                            <br>• <em>Focal Impaired Awareness Seizure (FIAS):</em> Consciousness or responsiveness is altered at any point during the seizure.
-                        </li>
-                        <li><strong>Generalized Onset:</strong> Originates at some point within, and rapidly engages, bilaterally distributed networks across both hemispheres. Awareness is almost universally impaired from onset.</li>
-                        <li><strong>Unknown Onset:</strong> Used when the start of a seizure cannot be determined, often because the event occurs unwitnessed during sleep (nocturnal seizures).</li>
-                    </ul>
-
-                    <div class="doc-section-title">Level 2: Motor vs. Non-Motor Descriptors</div>
-                    <ul class="medical-list">
-                        <li><strong>Focal Motor Manifestations:</strong> Can include automatisms (lip-smacking, hand-rubbing), tonic posturing, clonic jerking, myoclonic twitches, or epileptic spasms.</li>
-                        <li><strong>Focal Non-Motor Manifestations:</strong> Autonomic changes (epigastric rising sensation, flushing), behavior arrest, cognitive changes (déjà vu, jamais vu), or emotional outbursts (dacrystic/gelastic seizures).</li>
-                        <li><strong>Generalized Motor (Grand Mal):</strong> Tonic-clonic sequences, generalized myoclonic-atonic events, or pure clonic patterns.</li>
-                        <li><strong>Generalized Non-Motor (Absence / Petit Mal):</strong> Sudden onset and offset of behavioral arrest with a blank stare, commonly accompanied by 3-Hz spike-and-wave discharges on an EEG.</li>
-                    </ul>
-
-                    <div class="doc-section-title">Level 3: Status Epilepticus (Medical Emergency)</div>
-                    <p class="doc-text">Defined by a failure of the normal mechanisms responsible for seizure termination, leading to abnormally prolonged seizures. Operational time points for generalized convulsive status epilepticus:</p>
-                    <ul class="medical-list">
-                        <li><strong>Time Point t1 (5 Minutes):</strong> The threshold where continuous seizure activity or recurrent seizures without full recovery requires immediate pharmacological intervention (typically IV Benzodiazepines).</li>
-                        <li><strong>Time Point t2 (30 Minutes):</strong> The threshold beyond which long-term neuronal damage, necrosis, and systemic alterations (hypoxia, hyperthermia, lactic acidosis) begin to take place.</li>
-                    </ul>
-                `
-            },
-            'neurodegenerative': {
-                title: "Pathophysiology of Neurodegenerative Proteopathies",
-                category: "Clinical Pathology",
-                content: `
-                    <p class="doc-text">Neurodegenerative disorders are primarily classified as proteinopathies, where abnormal conformational changes lead to protein misfolding, aggregation, resistance to degradation, and systematic propagation through interconnected neural pathways.</p>
-                    
-                    <div class="doc-section-title">1. Alzheimer's Disease (AD) - Tauopathy & Amyloidopathy</div>
-                    <ul class="medical-list">
-                        <li><strong>Amyloid Cascade Hypothesis:</strong> Sequential cleavage of Amyloid Precursor Protein (APP) by beta-secretase and gamma-secretase yields neurotoxic Amyloid-beta (Aβ42) peptides. These aggregate extracellularly to form diffuse and neuritic senile plaques, primarily impacting the default mode network.</li>
-                        <li><strong>Neurofibrillary Tangles (NFTs):</strong> Hyperphosphorylation of the microtubule-stabilizing Tau protein causes it to detach from microtubules, aggregating intracellularly into paired helical filaments. NFT propagation correlates strictly with clinical cognitive decline, tracking via Braak Stages from the transentorhinal cortex to the limbic system and neocortex.</li>
-                        <li><strong>Genetics:</strong> Early-onset autosomal dominant AD involves mutations in <em>APP</em>, <em>PSEN1</em> (Presenilin 1), or <em>PSEN2</em>. Late-onset sporadic AD is heavily influenced by the <em>APOE</em> ε4 allele, which reduces Aβ clearance efficiency.</li>
-                    </ul>
-
-                    <div class="doc-section-title">2. Movement Neurodegeneration: Parkinson's & Huntington's</div>
-                    <ul class="medical-list">
-                        <li><strong>Parkinson's Disease (PD):</strong> Characterized by the profound loss of dopaminergic neurons within the Substantia Nigra pars compacta (SNc). Intracellular hallmarks are Lewy Bodies, primarily composed of aggregated alpha-synuclein protein. Neurotransmission failure in the nigrostriatal pathway disrupts the basal ganglia balance, creating severe poverty of movement.</li>
-                        <li><strong>Huntington's Disease (HD):</strong> An autosomal dominant triplet-repeat disorder characterized by an expanded CAG repeat sequence (&gt;36 repeats) within the <em>HTT</em> gene on chromosome 4. Leads to selective, toxic gain-of-function degradation of GABAergic medium spiny neurons in the striatum (specifically the caudate nucleus), presenting clinically as chorea and progressive dementia.</li>
-                    </ul>
-
-                    <div class="doc-section-title">3. Amyotrophic Lateral Sclerosis (ALS)</div>
-                    <p class="doc-text">A progressive, fatal disease targeting both Upper Motor Neurons (UMN) in the motor cortex and Lower Motor Neurons (LMN) in the brainstem and anterior horn of the spinal cord. Associated with TDP-43 protein aggregates and <em>C9orf72</em> hexanucleotide repeat expansions.</p>
-                    <ul class="medical-list">
-                        <li><strong>UMN Signs:</strong> Hyperreflexia, spasticity, clonus, and positive Babinski signs.</li>
-                        <li><strong>LMN Signs:</strong> Profound muscle atrophy, fasciculations, profound weakness, and flaccid paralysis.</li>
-                    </ul>
-                `
-            },
-            'demyelinating': {
-                title: "Central & Peripheral Demyelinating Disease Matrix",
-                category: "Clinical Pathology",
-                content: `
-                    <p class="doc-text">Demyelinating conditions are classified by their target neuroanatomy—specifically whether the autoimmune or inflammatory insult disrupts central oligodendrocytes or peripheral Schwann cells.</p>
-                    
-                    <div class="doc-section-title">1. Multiple Sclerosis (MS) & The McDonald Criteria</div>
-                    <ul class="medical-list">
-                        <li><strong>Pathophysiology:</strong> A chronic, cell-mediated autoimmune attack targeting central nervous system myelin. CD4+ and CD8+ T-cells cross the compromised blood-brain barrier, triggering macrophage activation and plaque formation primarily within periventricular white matter.</li>
-                        <li><strong>Diagnostic Core (McDonald 2017):</strong> Requires objective evidence of Dissemination in Space (DIS) and Dissemination in Time (DIT). 
-                            <br>• <em>DIS:</em> At least one T2 lesion in 2 of 4 classic CNS zones (periventricular, juxtacortical/cortical, infratentorial, or spinal cord).
-                            <br>• <em>DIT:</em> Simultaneous presence of both gadolinium-enhancing and non-enhancing lesions on any baseline MRI, OR a new lesion on a follow-up scan.
-                        </li>
-                        <li><strong>CSF Biomarkers:</strong> Lumbar puncture reveals <em>albuminocytologic dissociation</em> and highly specific CSF-restricted <strong>Oligoclonal Bands (OCBs)</strong> with an elevated IgG index, demonstrating localized intrathecal antibody synthesis.</li>
-                    </ul>
-
-                    <div class="doc-section-title">2. Neuromyelitis Optica Spectrum Disorder (NMOSD)</div>
-                    <p class="doc-text">Historically confused with MS, NMOSD is an aggressive astrocytopathy. It is driven by pathogenic serum **Aquaporin-4 IgG autoantibodies (AQP4-IgG)** that selectively target water channels on astrocyte foot processes.</p>
-                    <ul class="medical-list">
-                        <li><strong>Clinical Triad:</strong> Bilateral optic neuritis, Longitudinally Extensive Transverse Myelitis (LETM, extending over ≥3 contiguous vertebral segments), and area postrema syndrome (intractable hiccups, nausea, and vomiting).</li>
-                    </ul>
-
-                    <div class="doc-section-title">3. Guillain-Barré Syndrome (GBS)</div>
-                    <p class="doc-text">An acute-onset peripheral polyradiculoneuropathy. Frequently triggered 1–3 weeks post-infection by <em>Campylobacter jejuni</em> or respiratory viruses via molecular mimicry, where anti-ganglioside antibodies (e.g., GM1) attack peripheral Schwann cells.</p>
-                    <ul class="medical-list">
-                        <li><strong>Clinical Signature:</strong> Symmetrical, ascending flaccid paralysis accompanied by areflexia. Autonomic instability (arrhythmias, labile blood pressure) represents a critical life-threatening risk.</li>
-                    </ul>
-                `
-            },
-            'neuromuscular-junction': {
-                title: "Neuromuscular Junction & Muscle Pathology",
-                category: "Clinical Pathology",
-                content: `
-                    <p class="doc-text">Diseases of the neuromuscular junction (NMJ) disrupt synaptic transmission by targeting either pre-synaptic voltage-gated ion channels or post-synaptic neurotransmitter receptors. This creates highly distinct fatiguable vs. paradoxical weakness profiles.</p>
-                    
-                    <div class="doc-section-title">1. Myasthenia Gravis (MG) — Post-Synaptic Structural Failure</div>
-                    <ul class="medical-list">
-                        <li><strong>Pathophysiology:</strong> Primarily driven by autoantibodies against the post-synaptic <strong>Acetylcholine Receptor (AChR)</strong>. This triggers complement-mediated destruction of the postsynaptic folds, flattening the synaptic architecture and reducing active receptor availability. Secondary profiles may express anti-MuSK (Muscle-Specific Kinase) or anti-LRP4 antibodies.</li>
-                        <li><strong>Clinical Signature:</strong> Fluctuating, asymmetric skeletal muscle weakness that <strong>worsens with repetitive use</strong> and improves with rest. Classically presents with fluctuating ptosis, diplopia, dysarthria, or proximal limb fatigue.</li>
-                        <li><strong>Thymic Axis:</strong> Strongly associated with thymic hyperplasia (~65%) or thymoma (~15%). Thymectomy is frequently indicated to alter the underlying systemic antibody production pathway.</li>
-                    </ul>
-
-                    <div class="doc-section-title">2. Lambert-Eaton Myasthenic Syndrome (LEMS) — Pre-Synaptic Gating Failure</div>
-                    <ul class="medical-list">
-                        <li><strong>Pathophysiology:</strong> Autoantibodies target <strong>P/Q-type Voltage-Gated Calcium Channels (VGCC)</strong> on the pre-synaptic nerve terminal. This blocks the critical intracellular calcium influx required to trigger synaptic vesicle fusion and downstream exocytosis of Acetylcholine.</li>
-                        <li><strong>Clinical Signature:</strong> Symmetrical proximal lower extremity weakness. In direct contrast to MG, weakness <strong>paradoxically improves temporarily with brief exertion</strong>, as high-frequency repetitive nerve stimulation forces intracellular calcium buildup, rescuing vesicle release. Autonomic dropouts (dry mouth, erectile dysfunction) are common.</li>
-                        <li><strong>Malignancy Link:</strong> Heavily paraneoplastic. Up to 60% of cases are triggered by an underlying <strong>Small Cell Lung Carcinoma (SCLC)</strong> acting as the primary antigenic driver.</li>
-                    </ul>
-                `
-            },
-            'neuroradiology': {
-                title: "Advanced Neuroradiological Interpretation Protocols",
-                category: "Diagnostics & Therapeutics",
-                content: `
-                    <p class="doc-text">Neuroradiology forms the baseline structural framework for hyperacute decision-making. Proper triage requires a strict chronological understanding of how pathology behaves under X-ray attenuation and magnetic resonance shifts.</p>
-                    
-                    <div class="doc-section-title">1. Acute Ischemic Stroke on Non-Contrast Head CT</div>
-                    <p class="doc-text">The primary function of an initial NCCT is to rule out intracranial hemorrhage. However, highly subtle hyperacute ischemic signs appear within hours of large vessel occlusions:</p>
-                    <ul class="medical-list">
-                        <li><strong>Hyperdense MCA Sign:</strong> Increased attenuation inside the M1 segment of the Middle Cerebral Artery, signifying an acute intraluminal thrombus.</li>
-                        <li><strong>Loss of the Insular Ribbon:</strong> Early cytotoxic edema leads to mass effect, erasing the normal density difference between the gray matter of the insular cortex and adjacent white matter structures.</li>
-                        <li><strong>The ASPECTS System:</strong> The Alberta Stroke Program Early CT Score is a 10-point quantitative topographic score for early MCA ischemia. Points are systematically deducted for each area of acute hypodensity across defined structures (caudate, lentiform, internal capsule, and M1–M6 cortical zones). A lower score indicates extensive irreversible core infarct volume.</li>
-                    </ul>
-
-                    <div class="doc-section-title">2. MRI Sequencing and Ischemic Penumbra Mapping</div>
-                    <ul class="medical-list">
-                        <li><strong>DWI / ADC Mismatch:</strong> Diffusion-Weighted Imaging (DWI) flags restricted cellular water movement (cytotoxic edema) within minutes of ischemia, turning bright white. The Apparent Diffusion Coefficient (ADC) confirms this with a corresponding dark signal map. 
-                            <br>• <em>The Penumbra:</em> Comparing a large perfusion-weighted deficit area with a small DWI-restricted core identifies salvagable tissue, justifying late-window mechanical thrombectomy out to 24 hours.
-                        </li>
-                        <li><strong>FLAIR Sequencing:</strong> Fluid-Attenuated Inversion Recovery suppresses free-water CSF signals. If a stroke is highly visible on DWI but completely invisible on FLAIR, it indicates the infarct is ultra-acute (&lt;4.5 hours old), which helps establish time-of-onset for patients who woke up with stroke symptoms.</li>
-                    </ul>
-                `
-            },
-            'neuropharmacology': {
-                title: "Neuropharmacological Therapeutics Index",
-                category: "Diagnostics & Therapeutics",
-                content: `
-                    <p class="doc-text">This index maps structural chemical interventions to their target molecular receptors, outlining first-line clinical applications and distinct side-effect profiles across primary neurological syndromes.</p>
-                    
-                    <div class="doc-section-title">1. Broad-Spectrum vs. Narrow-Spectrum Antiepileptic Drugs (AEDs)</div>
-                    <ul class="medical-list">
-                        <li><strong>Sodium Channel Inactivation Extenders:</strong> <em>Phenytoin</em>, <em>Carbamazepine</em>, and <em>Lamotrigine</em>. They bind selectively to voltage-gated sodium channels in their inactive state, preventing high-frequency repetitive firing. 
-                            <br>• <em>Clinical Note:</em> Carbamazepine can severely exacerbate generalized absence seizures.
-                        </li>
-                        <li><strong>SV2A Vesicular Binders:</strong> <em>Levetiracetam</em>. Binds to synaptic vesicle protein 2A, modulating calcium-dependent neurotransmitter release. Highly utilized due to minimal hepatic drug-drug interactions, though it carries a risk of behavioral side effects (irritability/mood alterations).</li>
-                        <li><strong>Multi-Mechanism Agents:</strong> <em>Valproic Acid</em> and <em>Topiramate</em>. Block voltage-gated sodium channels, enhance GABA-A receptor-mediated inhibition, and antagonize glutamate receptors. First-line for idiopathic generalized epilepsies.</li>
-                    </ul>
-
-                    <div class="doc-section-title">2. Dopaminergic Rebalancing Modalities (Parkinson's Therapy)</div>
-                    <ul class="medical-list">
-                        <li><strong>Levodopa / Carbidopa:</strong> Levodopa crosses the blood-brain barrier via large neutral amino acid transporters to be decarboxylated into active dopamine. Carbidopa is a peripheral DOPA decarboxylase inhibitor that cannot cross the blood-brain barrier; its inclusion prevents peripheral conversion, minimizing severe nausea and orthostatic hypotension.</li>
-                        <li><strong>COMT Inhibitors (Entacapone):</strong> Inhibits Catechol-O-methyltransferase to block peripheral metabolism of Levodopa, extending its bioavailability and eliminating sudden "wearing-off" phenomena.</li>
-                        <li><strong>Dopamine Receptor Agonists:</strong> <em>Pramipexole</em> and <em>Ropinirole</em>. Directly stimulate D2/D3 receptors. They carry a distinct clinical risk profile for impulse control disorders (gambling, hypersexuality) via mesolimbic pathway hyperstimulation.</li>
-                    </ul>
-
-                    <div class="doc-section-title">3. Hyperacute Stroke Thrombolysis Protocol</div>
-                    <p class="doc-text"><strong>Alteplase / Tenecteplase (tPA):</strong> Recombinant tissue plasminogen activators. Mechanism: Binds directly to fibrin in a thrombus, converting trapped plasminogen into active plasmin, which systematically degrades the structural fibrin mesh layout to restore perfusion.</p>
-                `
-            },
-            'aspects-calc': {
-                title: "Topographic ASPECTS Calculation Engine",
-                category: "Clinical Tools",
-                content: `
-                    <p class="doc-text">The Alberta Stroke Program Early CT Score (ASPECTS) divides the middle cerebral artery (MCA) territory into 10 topographical regions. Select any structural zones below showing acute ischemic changes (loss of grey-white insulation boundaries or regional hypodensity) to determine total tissue integrity scores.</p>
-                    
-                    <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 1.5rem;">
-                        <div style="flex: 1.3; min-width: 320px; background: rgba(255,255,255,0.01); border: 1px solid var(--border-subtle); padding: 1.5rem; border-radius: 12px;">
-                            
-                            <h3 style="font-size: 0.9rem; color: var(--accent-teal); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Ganglionic Structures (Basal Ganglia Level)</h3>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.5rem;">
-                                <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); cursor: pointer;"><input type="checkbox" class="aspects-zone" onchange="evaluateAspects()"> Caudate Nucleus (C)</label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); cursor: pointer;"><input type="checkbox" class="aspects-zone" onchange="evaluateAspects()"> Lentiform Nucleus (L)</label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); cursor: pointer;"><input type="checkbox" class="aspects-zone" onchange="evaluateAspects()"> Internal Capsule (IC)</label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); cursor: pointer;"><input type="checkbox" class="aspects-zone" onchange="evaluateAspects()"> Insular Ribbon (I)</label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); cursor: pointer;"><input type="checkbox" class="aspects-zone" onchange="evaluateAspects()"> M1 (Anterior MCA)</label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); cursor: pointer;"><input type="checkbox" class="aspects-zone" onchange="evaluateAspects()"> M2 (Lateral MCA)</label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); cursor: pointer;"><input type="checkbox" class="aspects-zone" onchange="evaluateAspects()"> M3 (Posterior MCA)</label>
-                            </div>
-
-                            <h3 style="font-size: 0.9rem; color: var(--accent-teal); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Supraganglionic Structures (Rostral Level)</h3>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                                <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); cursor: pointer;"><input type="checkbox" class="aspects-zone" onchange="evaluateAspects()"> M4 (Anterior MCA)</label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); cursor: pointer;"><input type="checkbox" class="aspects-zone" onchange="evaluateAspects()"> M5 (Lateral MCA)</label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); cursor: pointer;"><input type="checkbox" class="aspects-zone" onchange="evaluateAspects()"> M6 (Posterior MCA)</label>
-                            </div>
-                            
-                            <div style="margin-top: 1.5rem; font-size: 0.75rem; color: var(--text-secondary); font-style: italic; border-top: 1px dashed var(--border-subtle); padding-top: 0.75rem;">
-                                *Clinical Rule: Selecting a checkbox flags an area of damage and subtracts 1 point from a baseline configuration of 10.
-                            </div>
-                        </div>
-
-                        <div style="flex: 1; min-width: 260px; display: flex; flex-direction: column; justify-content: space-between; background: rgba(79, 209, 197, 0.03); border: 1px solid var(--border-glow); padding: 2rem; border-radius: 12px; text-align: center;">
-                            <div>
-                                <div style="font-size: 0.8rem; font-weight: 600; letter-spacing: 1.5px; color: var(--text-secondary); text-transform: uppercase;">ASPECTS Value</div>
-                                <div id="aspects-score-display" style="font-size: 5rem; font-weight: 700; color: #FFF; margin: 0.5rem 0; text-shadow: 0 0 25px rgba(79,209,197,0.3);">10</div>
-                            </div>
-                            <div id="aspects-guidance" style="background: rgba(3, 7, 18, 0.6); padding: 1rem; border-radius: 8px; font-size: 0.85rem; line-height: 1.6; text-align: left; border-left: 4px solid var(--accent-teal); color: var(--text-secondary);">
-                                <strong style="color:#FFF;">Score: 10/10 (Normal Matrix)</strong><br>No visual acute changes or core hypodensity tracked across the MCA architecture. Completely eligible for reperfusion interventions if meeting matching chronological criteria.
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-            'nmj-wizard': {
-                title: "NMJ Differential Diagnosis Wizard",
-                category: "Clinical Tools",
-                content: `
-                    <p class="doc-text">This diagnostic matrix processes clinical phenotypes to calculate a weighted match probability across primary neuromuscular junction pathologies. Select the clinical presentation choices below to generate real-time probability indices.</p>
-                    
-                    <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 1.5rem;">
-                        <div style="flex: 1.4; min-width: 320px; background: rgba(255,255,255,0.01); border: 1px solid var(--border-subtle); padding: 1.5rem; border-radius: 12px; display: flex; flex-direction: column; gap: 1.25rem;">
-                            
-                            <div>
-                                <h4 style="font-size: 0.85rem; color: var(--accent-teal); margin-bottom: 0.5rem; text-transform: uppercase;">1. Weakness Pattern & Progression</h4>
-                                <select class="wizard-input" id="param-progression" onchange="evaluateNmjWizard()" style="width:100%; background:#030712; border:1px solid var(--border-subtle); color:#FFF; padding:0.5rem; border-radius:6px; outline:none;">
-                                    <option value="none">-- Select Presentation --</option>
-                                    <option value="mg">Fluctuating, asymmetric cranial/bulbar or proximal arm fatigue</option>
-                                    <option value="lems">Symmetric lower-limb proximal weakness with difficulty rising from a chair</option>
-                                    <option value="bot">Hyperacute, rapidly descending symmetrical flaccid paralysis</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <h4 style="font-size: 0.85rem; color: var(--accent-teal); margin-bottom: 0.5rem; text-transform: uppercase;">2. Repetitive Muscle Exertion Effect</h4>
-                                <select class="wizard-input" id="param-exertion" onchange="evaluateNmjWizard()" style="width:100%; background:#030712; border:1px solid var(--border-subtle); color:#FFF; padding:0.5rem; border-radius:6px; outline:none;">
-                                    <option value="none">-- Select Presentation --</option>
-                                    <option value="mg">True Fatiguability: Weakness worsens significantly with repetitive use</option>
-                                    <option value="lems">Paradoxical Facilitation: Strength improves temporarily after brief muscle contraction</option>
-                                    <option value="bot">Unchanged: Severe unremitting weakness showing no facilitation dynamics</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <h4 style="font-size: 0.85rem; color: var(--accent-teal); margin-bottom: 0.5rem; text-transform: uppercase;">3. Deep Tendon Reflexes (DTRs)</h4>
-                                <select class="wizard-input" id="param-reflexes" onchange="evaluateNmjWizard()" style="width:100%; background:#030712; border:1px solid var(--border-subtle); color:#FFF; padding:0.5rem; border-radius:6px; outline:none;">
-                                    <option value="none">-- Select Presentation --</option>
-                                    <option value="mg">Normal, fully preserved or brisk</option>
-                                    <option value="lems">Diminished/Absent at rest; returns/enhances post-exercise</option>
-                                    <option value="bot">Diffusely depressed or absent across all distributions</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <h4 style="font-size: 0.85rem; color: var(--accent-teal); margin-bottom: 0.5rem; text-transform: uppercase;">4. Autonomic Signatures</h4>
-                                <select class="wizard-input" id="param-autonomic" onchange="evaluateNmjWizard()" style="width:100%; background:#030712; border:1px solid var(--border-subtle); color:#FFF; padding:0.5rem; border-radius:6px; outline:none;">
-                                    <option value="none">-- Select Presentation --</option>
-                                    <option value="mg">Absent (No autonomic processing disruption)</option>
-                                    <option value="lems">Mild-to-moderate systemic adjustments (Dry mouth, erectile dysfunction)</option>
-                                    <option value="bot">Severe/Acute breakdown (Fixed dilated pupils, severe ileus, urinary retention)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div style="flex: 1; min-width: 280px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); padding: 1.5rem; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 1.5rem;">
-                            <div>
-                                <h3 style="font-size: 0.9rem; color: #FFF; font-weight:600; margin-bottom: 1.25rem; letter-spacing: 0.5px;">Differential Match Probability</h3>
-                                
-                                <div style="margin-bottom: 1rem;">
-                                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:0.25rem;">
-                                        <span style="color:#FFF; font-weight:500;">Myasthenia Gravis</span>
-                                        <span id="prob-mg-text" style="color:var(--accent-teal);">0%</span>
-                                    </div>
-                                    <div style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
-                                        <div id="prob-mg-bar" style="height:100%; width:0%; background:var(--accent-teal); transition:width 0.3s ease;"></div>
-                                    </div>
-                                </div>
-
-                                <div style="margin-bottom: 1rem;">
-                                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:0.25rem;">
-                                        <span style="color:#FFF; font-weight:500;">Lambert-Eaton (LEMS)</span>
-                                        <span id="prob-lems-text" style="color:var(--accent-blue);">0%</span>
-                                    </div>
-                                    <div style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
-                                        <div id="prob-lems-bar" style="height:100%; width:0%; background:var(--accent-blue); transition:width 0.3s ease;"></div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:0.25rem;">
-                                        <span style="color:#FFF; font-weight:500;">Clostridium Botulism</span>
-                                        <span id="prob-bot-text" style="color:#EF4444;">0%</span>
-                                    </div>
-                                    <div style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
-                                        <div id="prob-bot-bar" style="height:100%; width:0%; background:#EF4444; transition:width 0.3s ease;"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="wizard-diagnostic-insight" style="background: rgba(3, 7, 18, 0.5); padding: 0.85rem; border-radius: 8px; font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary); border-left: 3px solid var(--border-subtle); text-align: left;">
-                                Awaiting clinical profile selections to stabilize differential diagnosis calculations.
-                            </div>
-                        </div>
-                    </div>
-                `
-            }
-        };
-
-        /* =========================================================================
-           B. ENGINE ARCHITECTURE & SEARCH INTERACTION LOGIC
-           ========================================================================= */
-        const renderTarget = document.getElementById('render-target');
-        const breadcrumbNode = document.getElementById('breadcrumb-indicator');
-        const sidebarNode = document.getElementById('app-sidebar');
-        const searchInput = document.getElementById('global-search');
-        const searchDropdown = document.getElementById('search-results-dropdown');
-
-        function loadArticle(articleKey) {
-            const documentPayload = NEURO_DATABASE[articleKey];
-            if (!documentPayload) return;
-
-            renderTarget.innerHTML = `
-                <div class="doc-tag">${documentPayload.category}</div>
-                <h2 class="doc-title">${documentPayload.title}</h2>
-                <hr style="border:none; border-top:1px solid var(--border-subtle); margin-bottom:1.5rem;">
-                ${documentPayload.content}
-            `;
-
-            breadcrumbNode.textContent = `${documentPayload.category.toUpperCase()} / ${documentPayload.title.toUpperCase()}`;
-
-            document.querySelectorAll('.nav-item').forEach(button => {
-                if (button.getAttribute('onclick').includes(`'${articleKey}'`)) {
-                    button.classList.add('active');
-                } else {
-                    button.classList.remove('active');
-                }
-            });
-
-            sidebarNode.classList.remove('open');
-            searchDropdown.style.display = 'none';
-            searchInput.value = '';
-        }
-
-        // --- REAL-TIME LIVE TEXT SCANNER PIPELINE ---
-        function executeSearch() {
-            const rawQuery = searchInput.value.trim().toLowerCase();
-            
-            if (rawQuery.length === 0) {
-                searchDropdown.style.display = 'none';
-                searchDropdown.innerHTML = '';
-                return;
-            }
-
-            let injectionHTML = '';
-            let matchesFound = 0;
-
-            for (const key in NEURO_DATABASE) {
-                const article = NEURO_DATABASE[key];
-                const targetTextPool = `${article.title} ${article.category} ${article.content}`.toLowerCase();
-
-                if (targetTextPool.includes(rawQuery)) {
-                    matchesFound++;
-                    injectionHTML += `
-                        <div class="search-result-item" onclick="loadArticle('${key}')">
-                            <div class="search-result-title">${article.title}</div>
-                            <div class="search-result-category">${article.category}</div>
-                        </div>
-                    `;
-                }
-            }
-
-            if (matchesFound === 0) {
-                injectionHTML = `<div class="search-no-results">No specific diagnostic profiles found for "${searchInput.value}"</div>`;
-            }
-
-            searchDropdown.innerHTML = injectionHTML;
-            searchDropdown.style.display = 'block';
-        }
-
-        /* =========================================================================
-           C. INTERACTIVE CALCULATOR CORE EXECUTION
-           ========================================================================= */
-        window.evaluateAspects = function() {
-            const checkboxes = document.querySelectorAll('.aspects-zone');
-            let structuralDeficits = 0;
-            
-            checkboxes.forEach(box => {
-                if (box.checked) structuralDeficits++;
-            });
-
-            const totalScore = 10 - structuralDeficits;
-            const scoreDisplay = document.getElementById('aspects-score-display');
-            const guidanceBox = document.getElementById('aspects-guidance');
-
-            if (!scoreDisplay || !guidanceBox) return;
-
-            scoreDisplay.textContent = totalScore;
-
-            if (totalScore === 10) {
-                guidanceBox.style.borderLeftColor = "var(--accent-teal)";
-                guidanceBox.innerHTML = `<strong style="color:#FFF;">Score: 10/10 (Normal Matrix)</strong><br>No visual acute changes or core hypodensity tracked across the MCA architecture. Completely eligible for reperfusion interventions if meeting matching chronological criteria.`;
-            } else if (totalScore >= 7) {
-                guidanceBox.style.borderLeftColor = "var(--accent-blue)";
-                guidanceBox.innerHTML = `<strong style="color:#FFF;">Score: ${totalScore}/10 (Favorable Presentation)</strong><br>Limited early ischemic tissue drops observed. Represents low overall core volume. Highly predictive of stable clinical returns via thrombolysis (tPA) or active thrombectomy arrays.`;
-            } else {
-                guidanceBox.style.borderLeftColor = "#EF4444";
-                guidanceBox.innerHTML = `<strong style="color:#FFF;">Score: ${totalScore}/10 (Extensive Core Volume)</strong><br>Ischemia extends across more than 1/3 of the targeted MCA tree structure. Substantial baseline injury raises risk thresholds for severe hemorrhagic transformations if clear fibrinolytics are deployed.`;
-            }
-        };
-
-        window.evaluateNmjWizard = function() {
-            const progression = document.getElementById('param-progression').value;
-            const exertion = document.getElementById('param-exertion').value;
-            const reflexes = document.getElementById('param-reflexes').value;
-            const autonomic = document.getElementById('param-autonomic').value;
-
-            let scoreMG = 0;
-            let scoreLEMS = 0;
-            let scoreBOT = 0;
-            let validInputs = 0;
-
-            if (progression !== "none") {
-                validInputs++;
-                if (progression === "mg") scoreMG += 3;
-                if (progression === "lems") scoreLEMS += 3;
-                if (progression === "bot") scoreBOT += 3;
-            }
-
-            if (exertion !== "none") {
-                validInputs++;
-                if (exertion === "mg") scoreMG += 4;
-                if (exertion === "lems") scoreLEMS += 4;
-                if (exertion === "bot") scoreBOT += 2;
-            }
-
-            if (reflexes !== "none") {
-                validInputs++;
-                if (reflexes === "mg") scoreMG += 3;
-                if (reflexes === "lems") scoreLEMS += 4;
-                if (reflexes === "bot") scoreBOT += 3;
-            }
-
-            if (autonomic !== "none") {
-                validInputs++;
-                if (autonomic === "mg") scoreMG += 3;
-                if (autonomic === "lems") scoreLEMS += 2;
-                if (autonomic === "bot") scoreBOT += 4;
-            }
-
-            const mgText = document.getElementById('prob-mg-text');
-            const mgBar = document.getElementById('prob-mg-bar');
-            const lemsText = document.getElementById('prob-lems-text');
-            const lemsBar = document.getElementById('prob-lems-bar');
-            const botText = document.getElementById('prob-bot-text');
-            const botBar = document.getElementById('prob-bot-bar');
-            const insightBox = document.getElementById('wizard-diagnostic-insight');
-
-            if (!mgText || !validInputs) {
-                if(mgText) {
-                    mgText.textContent = lemsText.textContent = botText.textContent = "0%";
-                    mgBar.style.width = lemsBar.style.width = botBar.style.width = "0%";
-                    insightBox.style.borderLeftColor = "var(--border-subtle)";
-                    insightBox.textContent = "Awaiting clinical profile selections to stabilize differential diagnosis calculations.";
-                }
-                return;
-            }
-
-            const totalWeight = scoreMG + scoreLEMS + scoreBOT;
-            
-            const pctMG = Math.round((scoreMG / totalWeight) * 100);
-            const pctLEMS = Math.round((scoreLEMS / totalWeight) * 100);
-            const pctBOT = Math.round((scoreBOT / totalWeight) * 100);
-
-            mgText.textContent = `${pctMG}%`; mgBar.style.width = `${pctMG}%`;
-            lemsText.textContent = `${pctLEMS}%`; lemsBar.style.width = `${pctLEMS}%`;
-            botText.textContent = `${pctBOT}%`; botBar.style.width = `${pctBOT}%`;
-
-            if (pctMG > pctLEMS && pctMG > pctBOT) {
-                insightBox.style.borderLeftColor = "var(--accent-teal)";
-                insightBox.innerHTML = `<strong style="color:#FFF;">Primary Suspicion: Myasthenia Gravis</strong><br>Fatiguing, variable clinical signs with normal reflexes point toward a post-synaptic breakdown. Order serum Anti-AChR or Anti-MuSK antibodies, and consider a confirmatory repetitive nerve stimulation (RNS) study showing a decremental response.`;
-            } else if (pctLEMS > pctMG && pctLEMS > pctBOT) {
-                insightBox.style.borderLeftColor = "var(--accent-blue)";
-                insightBox.innerHTML = `<strong style="color:#FFF;">Primary Suspicion: Lambert-Eaton (LEMS)</strong><br>Paradoxical facilitation with diminished reflexes implies a pre-synaptic VGCC blocking mechanism. Urgent screening for underlying malignancies via chest CT (looking for Small Cell Lung Carcinoma) is strongly recommended.`;
-            } else if (pctBOT > pctMG && pctBOT > pctLEMS) {
-                insightBox.style.borderLeftColor = "#EF4444";
-                insightBox.innerHTML = `<strong style="color:#FFF;">Primary Suspicion: Botulism Toxicity</strong><br>An acute, descending flaccid presentation with severe autonomic drops is a medical emergency. Monitor vital capacity closely to prepare for impending respiratory failure, and contact public health authorities immediately for botulinum antitoxin access.`;
-            } else {
-                insightBox.style.borderLeftColor = "var(--text-secondary)";
-                insightBox.innerHTML = `<strong style="color:#FFF;">Mixed Equivocal Presentation</strong><br>No single clinical vector dominated the scoring matrix. Refine selections or supplement the clinical picture with electrodiagnostic studies (RNS or single-fiber EMG).`;
-            }
-        };
-
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-wrapper')) {
-                searchDropdown.style.display = 'none';
-            }
-        });
-
-        function toggleSidebarMenu() {
-            sidebarNode.classList.toggle('open');
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            loadArticle('cortical-localization');
-        });
-
-        /* =========================================================================
-           D. SILKY-SMOOTH 3D AMBIENT BACKGROUND SYSTEM (THREE.JS)
-           ========================================================================= */
-        const canvasContainer = document.getElementById('canvas-ambient-container');
-        const activeScene = new THREE.Scene();
+        // Responsive Mobile Menu Drawer Toggle Action Logic
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
         
-        const ambientCamera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
-        ambientCamera.position.z = 130;
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
 
-        const canvasRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        canvasRenderer.setSize(window.innerWidth, window.innerHeight);
-        canvasRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        canvasContainer.appendChild(canvasRenderer.domElement);
-
-        const particleArrayCount = 140;
-        const structuralGeometry = new THREE.BufferGeometry();
-        const physicalPositions = new Float32Array(particleArrayCount * 3);
-        const directionalVelocities = [];
-
-        for (let i = 0; i < particleArrayCount * 3; i += 3) {
-            physicalPositions[i] = (Math.random() - 0.5) * 300;
-            physicalPositions[i + 1] = (Math.random() - 0.5) * 300;
-            physicalPositions[i + 2] = (Math.random() - 0.5) * 150;
-            
-            directionalVelocities.push({
-                x: (Math.random() - 0.5) * 0.1,
-                y: (Math.random() - 0.5) * 0.1,
-                z: (Math.random() - 0.5) * 0.1
+        // Hide mobile menu when links are clicked
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
             });
-        }
-
-        structuralGeometry.setAttribute('position', new THREE.BufferAttribute(physicalPositions, 3));
-
-        const systemMaterial = new THREE.PointsMaterial({
-            color: 0x4FD1C5,
-            size: 1.2,
-            transparent: true,
-            opacity: 0.6,
-            blending: THREE.AdditiveBlending
         });
 
-        const brainNetworkMesh = new THREE.Points(structuralGeometry, systemMaterial);
-        activeScene.add(brainNetworkMesh);
-
-        let interpolatedX = 0, interpolatedY = 0;
-        window.addEventListener('mousemove', (event) => {
-            interpolatedX = (event.clientX - window.innerWidth / 2) * 0.02;
-            interpolatedY = (event.clientY - window.innerHeight / 2) * 0.02;
-        });
-
-        function renderFramePipeline() {
-            requestAnimationFrame(renderFramePipeline);
-
-            ambientCamera.position.x += (interpolatedX - ambientCamera.position.x) * 0.05;
-            ambientCamera.position.y += (-interpolatedY - ambientCamera.position.y) * 0.05;
-            ambientCamera.lookAt(activeScene.position);
-
-            const positionTrack = brainNetworkMesh.position.scene ? [] : brainNetworkMesh.geometry.attributes.position.array;
-            for (let i = 0; i < particleArrayCount; i++) {
-                positionTrack[i * 3] += directionalVelocities[i].x;
-                positionTrack[i * 3 + 1] += directionalVelocities[i].y;
-                positionTrack[i * 3 + 2] += directionalVelocities[i].z;
-
-                if (Math.abs(positionTrack[i * 3]) > 150) directionalVelocities[i].x *= -1;
-                if (Math.abs(positionTrack[i * 3 + 1]) > 150) directionalVelocities[i].y *= -1;
-                if (Math.abs(positionTrack[i * 3 + 2]) > 75) directionalVelocities[i].z *= -1;
+        // General Interactive Display Visibility Toggle function
+        function toggleReveal(targetId) {
+            const targetEl = document.getElementById(targetId);
+            if(targetEl) {
+                targetEl.classList.toggle('hidden');
             }
-            brainNetworkMesh.geometry.attributes.position.needsUpdate = true;
-            brainNetworkMesh.rotation.y += 0.0005;
-
-            canvasRenderer.render(activeScene, ambientCamera);
         }
-        renderFramePipeline();
 
-        window.addEventListener('resize', () => {
-            ambientCamera.aspect = window.innerWidth / window.innerHeight;
-            ambientCamera.updateProjectionMatrix();
-            canvasRenderer.setSize(window.innerWidth, window.innerHeight);
-        });
+        // Object matrix dictionary tracking matching states
+        let quizState = {
+            'node-alpha-sel': false,
+            'node-beta-sel': false,
+            'node-gamma-sel': false
+        };
+
+        // Node answer validator and real-time validation tracking logic
+        function checkNodeAnswer(elementId, correctValue) {
+            const currentSelector = document.getElementById(elementId);
+            if(currentSelector.value === correctValue) {
+                currentSelector.classList.remove('bg-indigo-900', 'border-white/20', 'border-red-500');
+                currentSelector.classList.add('bg-emerald-800', 'border-emerald-400');
+                quizState[elementId] = true;
+            } else {
+                currentSelector.classList.remove('bg-indigo-900', 'border-white/20', 'bg-emerald-800', 'border-emerald-400');
+                currentSelector.classList.add('border-red-500');
+                quizState[elementId] = false;
+            }
+            updateScoreboardFeedback();
+        }
+
+        // Live updating score calculation output text handler routine
+        function updateScoreboardFeedback() {
+            let totalCorrect = Object.values(quizState).filter(val => val === true).length;
+            const feedbackEl = document.getElementById('quiz-status-feedback');
+            
+            if(totalCorrect === 3) {
+                feedbackEl.className = "text-xs font-bold text-emerald-400 animate-bounce mt-2";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> 3 / 3 Perfect! Excellent Study Skills!`;
+            } else {
+                feedbackEl.className = "text-xs font-bold text-pink-400 mt-2";
+                feedbackEl.innerHTML = `${totalCorrect} / 3 Correctly Matched`;
+            }
+        }
     </script>
 </body>
 </html>
