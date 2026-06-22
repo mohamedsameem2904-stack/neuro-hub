@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neurology Hub - Study Workspace</title>
+    <!-- Tailwind CSS for perfect mobile and desktop styling -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- Responsive Navigation -->
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50 px-4 py-3 md:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">🧠</span>
+                <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">NeuroStudy Central</h1>
+            </div>
+            <!-- Search engine placeholder for comprehensive data hunting -->
+            <div class="w-full sm:w-72 relative">
+                <input type="text" placeholder="Search absolute neurology data..." class="w-full text-xs bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 pl-8 focus:outline-none focus:border-indigo-500 transition-all text-slate-300">
+                <span class="absolute left-2.5 top-2.5 text-xs opacity-40">🔍</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Workspace Grid Layout -->
+    <!-- On mobile: stacks into 1 column. On desktop: beautifully spans 3 columns -->
+    <main class="max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow">
+        
+        <!-- COLUMN 1 & 2: THE KNOWLEDGE MATRIX (Occupies 2 columns on desktop) -->
+        <section class="lg:col-span-2 space-y-6">
+            <div class="bg-gradient-to-r from-slate-900 to-indigo-950/40 p-6 rounded-2xl border border-slate-800/80">
+                <h2 class="text-xl font-bold text-white mb-1">Neurological Core Modules</h2>
+                <p class="text-xs text-slate-400 mb-6">Uncompromising data branches mapped perfectly for extensive medical reference.</p>
+                
+                <!-- Core Modules Grid: 1 col on mobile, 2 cols on tablet/desktop -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Card 1 -->
+                     <a href="flashcards.html" class="block bg-slate-900/50 p-4 rounded-xl border border-slate-800 hover:border-indigo-500/50 transition-all group cursor-pointer">
+            <h3 class="font-bold text-slate-200 group-hover:text-indigo-400 transition-colors text-sm">Flashcards</h3>
+        </a>
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 hover:border-indigo-500/50 transition-all group cursor-pointer">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-lg">🔬</span>
+                            <span class="text-[10px] bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded-full font-mono">MODULE 01</span>
+                        </div>
+                        <h3 class="font-bold text-slate-200 group-hover:text-indigo-400 transition-colors text-sm">Neuroanatomy & Pathways</h3>
+                        <p class="text-xs text-slate-400 mt-1 leading-relaxed">Complete structural analysis of the CNS, PNS, cranial nerves, and vascular supplies.</p>
+                    </div>
+
+                    <!-- Card 2 -->
+                     <a href="library.html" class="block bg-slate-900/50 p-4 rounded-xl border border-slate-800 hover:border-indigo-500/50 transition-all group cursor-pointer">
+            <h3 class="font-bold text-slate-200 group-hover:text-indigo-400 transition-colors text-sm">Library</h3>
+        </a>
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 hover:border-indigo-500/50 transition-all group cursor-pointer">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-lg">🩺</span>
+                            <span class="text-[10px] bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded-full font-mono">MODULE 02</span>
+                        </div>
+                        <h3 class="font-bold text-slate-200 group-hover:text-purple-400 transition-colors text-sm">Clinical Neuropathology</h3>
+                        <p class="text-xs text-slate-400 mt-1 leading-relaxed">Deep clinical data covering neurodegenerative conditions, stroke types, and demyelinating diseases.</p>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 hover:border-indigo-500/50 transition-all group cursor-pointer">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-lg">⚡</span>
+                            <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-mono">MODULE 03</span>
+                        </div>
+                        <h3 class="font-bold text-slate-200 group-hover:text-emerald-400 transition-colors text-sm">Neurodiagnostics & Physiology</h3>
+                        <p class="text-xs text-slate-400 mt-1 leading-relaxed">Comprehensive interpretation mapping for EEG trends, functional MRI sequences, and EMG data readings.</p>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 hover:border-indigo-500/50 transition-all group cursor-pointer">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-lg">💊</span>
+                            <span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full font-mono">MODULE 04</span>
+                        </div>
+                        <h3 class="font-bold text-slate-200 group-hover:text-amber-400 transition-colors text-sm">Neuropharmacology</h3>
+                        <p class="text-xs text-slate-400 mt-1 leading-relaxed">In-depth actions, chemical barriers, and mechanics of neuroactive substances and drug classes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- External Global Libraries Section to fulfill the "All Info" promise -->
+            <div class="bg-slate-900/40 p-4 rounded-xl border border-slate-800">
+                <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">🔴 Open-Access Live Medical Vaults</h4>
+                <p class="text-xs text-slate-400 mb-3">Instantly look up any niche case files or real-time neuro-scientific publications directly:</p>
+                <div class="flex flex-wrap gap-2">
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" class="text-xs bg-slate-900 hover:bg-slate-800 border border-slate-800 px-3 py-1.5 rounded-md text-indigo-400 font-medium">PubMed Database ↗</a>
+                    <a href="https://www.brainfacts.org/" target="_blank" class="text-xs bg-slate-900 hover:bg-slate-800 border border-slate-800 px-3 py-1.5 rounded-md text-purple-400 font-medium">BrainFacts Interactive ↗</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- COLUMN 3: THE CARE & EFFORT PANEL (Occupies 1 column on desktop, snaps to bottom on mobile) -->
+        <section class="space-y-6">
+            
+            <!-- Live Pomodoro Study Companion -->
+            <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 text-center">
+                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">Brain Power Companion</h3>
+                <div id="timerDisplay" class="text-3xl font-mono font-bold text-white mb-3 tracking-wider">25:00</div>
+                <div class="flex justify-center gap-2">
+                    <button id="startBtn" onclick="toggleTimer()" class="text-xs bg-indigo-600 hover:bg-indigo-500 px-4 py-1.5 rounded-lg text-white font-medium transition-all cursor-pointer">Start Focus</button>
+                    <button onclick="resetTimer()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-slate-300 transition-all cursor-pointer">Reset</button>
+                </div>
+            </div>
+
+            <!-- Smart Auto-Saving Notebook -->
+            <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 flex flex-col h-64">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-xs font-bold text-purple-400 uppercase tracking-widest">Active Study Notes</h3>
+                    <span class="text-[10px] text-slate-500">Auto-saves instantly</span>
+                </div>
+                <textarea id="studyNotes" oninput="saveNotes()" placeholder="Type definitions, clinical criteria, or complex ideas here..." class="w-full flex-grow bg-slate-950 border border-slate-800/80 rounded-xl p-3 text-xs text-slate-300 focus:outline-none focus:border-purple-500 resize-none leading-relaxed"></textarea>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Small footer reminder of your support -->
+    <footer class="bg-slate-950 border-t border-slate-900 py-3 text-center text-[11px] text-slate-600">
+        <p>Tailored with every ounce of effort to support her study marathon. Powered by your care.</p>
+    </footer>
+
+    <!-- Logic for the Study Companion Tools -->
+    <script>
+        // 1. Note Saving Logic (Uses her browser's local memory)
+        window.onload = function() {
+            if(localStorage.getItem("neuro_notes")) {
+                document.getElementById("studyNotes").value = localStorage.getItem("neuro_notes");
+            }
+        }
+        function saveNotes() {
+            const currentNotes = document.getElementById("studyNotes").value;
+            localStorage.setItem("neuro_notes", currentNotes);
+        }
+
+        // 2. Pomodoro Timer Logic
+        let timer;
+        let minutes = 25;
+        let seconds = 0;
+        let isRunning = false;
+
+        function toggleTimer() {
+            const startBtn = document.getElementById("startBtn");
+            if (!isRunning) {
+                isRunning = true;
+                startBtn.innerText = "Pause";
+                timer = setInterval(updateTimer, 1000);
+            } else {
+                isRunning = false;
+                startBtn.innerText = "Start Focus";
+                clearInterval(timer);
+            }
+        }
+
+        function updateTimer() {
+            if (seconds === 0) {
+                if (minutes === 0) {
+                    clearInterval(timer);
+                    alert("Time for a quick brain break! Great studying.");
+                    resetTimer();
+                    return;
+                }
+                minutes--;
+                seconds = 59;
+            } else {
+                seconds--;
+            }
+            renderTimer();
+        }
+
+        function renderTimer() {
+            const displayMin = minutes < 10 ? "0" + minutes : minutes;
+            const displaySec = seconds < 10 ? "0" + seconds : seconds;
+            document.getElementById("timerDisplay").innerText = `${displayMin}:${displaySec}`;
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            isRunning = false;
+            minutes = 25;
+            seconds = 0;
+            document.getElementById("startBtn").innerText = "Start Focus";
+            renderTimer();
+        }
+    </script>
+</body>
+</html>

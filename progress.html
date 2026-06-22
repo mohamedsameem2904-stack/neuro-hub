@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neurology Study Progress</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <nav class="bg-slate-900 border-b border-slate-800 p-4">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <a href="dashboard.html" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1">
+                ← Back to Dashboard
+            </a>
+            <span class="text-xs bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20 font-mono">
+                Metrics Portal Active
+            </span>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl w-full mx-auto px-4 py-8 flex-grow space-y-6">
+        
+        <div>
+            <h2 class="text-2xl font-extrabold text-white tracking-tight">Academic Milestone Log</h2>
+            <p class="text-xs text-slate-400 mt-1">Quantifying hours logged and path-mastery metrics.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Neurology Study Hours</h3>
+                    <p class="text-[10px] text-slate-500 mb-4">Click the buttons to adjust your logged timestamp metrics.</p>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span id="hoursDisplay" class="text-4xl font-extrabold text-white font-mono">0.0</span>
+                    <div class="flex gap-2">
+                        <button onclick="adjustHours(-0.5)" class="w-8 h-8 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center justify-center font-bold text-sm cursor-pointer">-</button>
+                        <button onclick="adjustHours(0.5)" class="w-8 h-8 bg-indigo-600 hover:bg-indigo-500 rounded-lg flex items-center justify-center font-bold text-sm text-white cursor-pointer">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Core Mastery Percentage</h3>
+                    <p class="text-[10px] text-slate-500 mb-4">Automatically scales based on checklist items marked complete.</p>
+                </div>
+                <div class="space-y-2">
+                    <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden border border-slate-800/80">
+                        <div id="progressBar" class="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full w-0 transition-all duration-500"></div>
+                    </div>
+                    <div class="text-right font-mono text-xs text-emerald-400 font-bold" id="progressPercent">0% Complete</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-sm font-bold text-white mb-4">Curriculum Component Breakdown</h3>
+            
+            <div class="space-y-3">
+                <label class="flex items-start gap-3 p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 cursor-pointer hover:border-slate-700 transition-all">
+                    <input type="checkbox" class="todo-item mt-0.5 rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-0" onchange="calculateProgress()">
+                    <div class="text-xs">
+                        <span class="font-bold text-slate-200 block">Neuroanatomy Foundations</span>
+                        <span class="text-slate-500 text-[11px]">Brainstem structures, cranial nerve nuclei, and cerebellar processing systems.</span>
+                    </div>
+                </label>
+
+                <label class="flex items-start gap-3 p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 cursor-pointer hover:border-slate-700 transition-all">
+                    <input type="checkbox" class="todo-item mt-0.5 rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-0" onchange="calculateProgress()">
+                    <div class="text-xs">
+                        <span class="font-bold text-slate-200 block">Cerebrovascular Profiles</span>
+                        <span class="text-slate-500 text-[11px]">Stroke pathomechanics, hemorrhage classifications, and vascular territories.</span>
+                    </div>
+                </label>
+
+                <label class="flex items-start gap-3 p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 cursor-pointer hover:border-slate-700 transition-all">
+                    <input type="checkbox" class="todo-item mt-0.5 rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-0" onchange="calculateProgress()">
+                    <div class="text-xs">
+                        <span class="font-bold text-slate-200 block">Electrodiagnostic Modalities</span>
+                        <span class="text-slate-500 text-[11px]">EEG seizure wave spikes, nerve conduction velocities, and action potential curves.</span>
+                    </div>
+                </label>
+
+                <label class="flex items-start gap-3 p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 cursor-pointer hover:border-slate-700 transition-all">
+                    <input type="checkbox" class="todo-item mt-0.5 rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-0" onchange="calculateProgress()">
+                    <div class="text-xs">
+                        <span class="font-bold text-slate-200 block">Neuro-Pharmacological Protocols</span>
+                        <span class="text-slate-500 text-[11px]">Antiepileptic receptor binding arrays and agonist/antagonist calculations.</span>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="p-4 text-center text-[11px] text-slate-600 border-t border-slate-900/60">
+        <p>A pristine canvas built step-by-step to track her inevitable ascension to clinical excellence.</p>
+    </footer>
+
+    <script>
+        let studyHours = 0.0;
+
+        window.onload = function() {
+            // Load Hours Data
+            if(localStorage.getItem("neuro_hours")) {
+                studyHours = parseFloat(localStorage.getItem("neuro_hours"));
+                document.getElementById("hoursDisplay").innerText = studyHours.toFixed(1);
+            }
+            // Load Checklist Data
+            if(localStorage.getItem("neuro_checklist")) {
+                const savedChecklist = JSON.parse(localStorage.getItem("neuro_checklist"));
+                const checkboxes = document.querySelectorAll('.todo-item');
+                checkboxes.forEach((box, index) => {
+                    box.checked = savedChecklist[index] || false;
+                });
+            }
+            calculateProgress();
+        }
+
+        function adjustHours(amount) {
+            studyHours += amount;
+            if(studyHours < 0) studyHours = 0; // Prevent negative study time numbers
+            document.getElementById("hoursDisplay").innerText = studyHours.toFixed(1);
+            localStorage.setItem("neuro_hours", studyHours);
+        }
+
+        function calculateProgress() {
+            const checkboxes = document.querySelectorAll('.todo-item');
+            const total = checkboxes.length;
+            let checkedCount = 0;
+            const stateArray = [];
+
+            checkboxes.forEach((box) => {
+                stateArray.push(box.checked);
+                if(box.checked) checkedCount++;
+            });
+
+            const numericPercentage = total > 0 ? Math.round((checkedCount / total) * 100) : 0;
+            
+            // Adjust the visual HTML DOM output states instantly
+            document.getElementById("progressBar").style.width = numericPercentage + "%";
+            document.getElementById("progressPercent").innerText = numericPercentage + "% Complete";
+
+            // Save checked elements state to system storage
+            localStorage.setItem("neuro_checklist", JSON.stringify(stateArray));
+        }
+    </script>
+</body>
+</html>
