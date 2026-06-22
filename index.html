@@ -85,14 +85,13 @@
 
     <!-- Logic to verify password -->
     <script>
-        window.location.href='dashboard.html';
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const passcodeField = document.getElementById('passcode').value;
             const errorMsg = document.getElementById('errorMessage');
 
-            // You can change 'neuro123' to whatever passcode you want her to type!
-            if (passcodeField === 'neuro123') {
+            // You can change 'afee13' to whatever passcode you want her to type!
+            if (passcodeField === 'afee13') {
                 errorMsg.classList.add('hidden');
                 // Right now it just alerts, but next we will make it seamlessly open the dashboard!
                 alert('Success! Redirecting her to her custom Neurology Hub...');
