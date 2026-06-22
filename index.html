@@ -3,293 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neurology Reference Hub</title>
-    <!-- Tailwind CSS for modern layout & responsiveness -->
+    <title>Welcome to Your Neurology Hub</title>
+    <!-- Tailwind CSS for modern styling and perfect mobile/desktop responsiveness -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        /* Smooth fade-in animation for a premium feel */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+<body class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 min-h-screen flex flex-col justify-between p-4 md:p-8 font-sans antialiased text-slate-100">
 
-    <!-- Top Navigation Bar -->
-    <nav class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center space-x-3">
-                    <!-- Brain Icon -->
-                    <svg class="h-8 w-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                    </svg>
-                    <span class="font-bold text-lg sm:text-xl tracking-tight text-white">NeuroStudy<span class="text-emerald-400">Hub</span></span>
-                </div>
-                
-                <!-- Dedicated Personal Button -->
-                <div>
-                    <button onclick="toggleDedication()" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-md transition-all duration-300 flex items-center space-x-2">
-                        <span>❤️ A Note For You</span>
-                    </button>
-                </div>
-            </div>
+    <!-- Top Decorative Header -->
+    <header class="w-full max-w-7xl mx-auto flex justify-between items-center opacity-80 animate-fade-in">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl">🧠</span>
+            <span class="text-xs uppercase tracking-widest font-semibold text-indigo-300">NeuroStudy Portal v1.0</span>
         </div>
-    </nav>
+        <span class="text-xs bg-indigo-500/10 text-indigo-300 px-3 py-1 rounded-full border border-indigo-500/20">
+            Designed for Future Neurologist ✨
+        </span>
+    </header>
 
-    <!-- Personal Dedication Overlay/Modal (Your Care & Effort Section) -->
-    <div id="dedicationModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 sm:p-8 relative shadow-2xl transition-all transform scale-100">
-            <button onclick="toggleDedication()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+    <!-- Main Welcome & Login Card -->
+    <main class="w-full max-w-md mx-auto my-auto animate-fade-in" style="animation-delay: 0.15s;">
+        <div class="bg-slate-900/60 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl shadow-indigo-950/50 text-center">
             
-            <div class="text-center mb-4">
-                <span class="text-4xl">🧠✨</span>
-                <h3 class="text-2xl font-bold text-white mt-2">Built With Absolute Care</h3>
+            <!-- Icon/Visual -->
+            <div class="w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 text-white">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                </svg>
             </div>
-            
-            <!-- You can customize this entire letter text to match your feelings exactly -->
-            <div class="text-slate-300 space-y-4 text-sm sm:text-base leading-relaxed">
-                <p>Hey inside-tracker,</p>
-                <p>I put this digital study companion together for you because I know how incredibly hard you work, and how much passion you have for understanding the complexities of human neurology.</p>
-                <p>Every line of data, every profile filter, and the layout itself was built with your endless study sessions in mind. I wanted you to have a beautiful, flawless reference library that fits right in your pocket or right on your desk.</p>
-                <p>Never stop learning, never forget how brilliant you are, and always remember that I'm right here supporting your grand journey into medicine and science.</p>
-            </div>
-            
-            <div class="mt-6 text-center">
-                <button onclick="toggleDedication()" class="bg-slate-700 hover:bg-slate-600 text-emerald-400 font-semibold px-6 py-2 rounded-lg transition-colors">
-                    Back to Studying
-                </button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Main Content Layout -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        <!-- Welcome Banner -->
-        <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-6 mb-8 shadow-xl">
-            <h1 class="text-3xl font-extrabold tracking-tight text-white mb-2 sm:text-4xl">
-                The Master Neurology Reference Hub
-            </h1>
-            <p class="text-slate-400 max-w-2xl text-sm sm:text-base">
-                An interactive database cataloging foundational data hubs, clinical paradigms, and history's most notable neurologists. Fully cross-referenced for rapid study access.
+            <!-- Title & Personal Dedication -->
+            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white mb-2">Welcome, Doctor.</h2>
+            <p class="text-slate-400 text-sm mb-8 leading-relaxed">
+                Every ounce of effort put into this platform was driven by your dedication to neurology. Enter your passcode to access your complete study universe.
             </p>
-        </div>
 
-        <!-- Interactive Navigation Tabs & Search Controls -->
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 bg-slate-850 p-2 rounded-xl border border-slate-800">
-            <!-- Navigation Tabs Toggle -->
-            <div class="flex space-x-2 bg-slate-900 p-1.5 rounded-lg border border-slate-700/50 self-start">
-                <button id="tabNeurologists" onclick="switchTab('neurologists')" class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 bg-emerald-500 text-white shadow">
-                    Neurologist Profiles
-                </button>
-                <button id="tabDataHub" onclick="switchTab('dataHub')" class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 text-slate-400 hover:text-slate-200">
-                    Clinical Data Hub
-                </button>
-            </div>
-
-            <!-- Search Bar Field Component -->
-            <div class="relative flex-grow md:max-w-md">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+            <!-- Login Form -->
+            <form id="loginForm" class="space-y-4 text-left">
+                <div>
+                    <label for="passcode" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 pl-1">
+                        Your Personal Passcode
+                    </label>
+                    <input 
+                        type="password" 
+                        id="passcode" 
+                        placeholder="••••••••" 
+                        required
+                        class="w-full px-4 py-3.5 bg-slate-950/50 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-center tracking-widest font-bold"
+                    >
                 </div>
-                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search names, conditions, or discoveries..." class="block w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition-all" />
-            </div>
-        </div>
 
-        <!-- Dynamic Content Display Grid -->
-        <div id="contentGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- JavaScript will dynamically render cards here inside runtime -->
-        </div>
+                <!-- Error Message Container (Hidden by default) -->
+                <p id="errorMessage" class="text-rose-400 text-xs text-center hidden font-medium">
+                    ❌ That's not the secret code! Try again.
+                </p>
 
-        <!-- Empty State Warning when zero search results are discovered -->
-        <div id="emptyState" class="hidden text-center py-12">
-            <svg class="mx-auto h-12 w-12 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h3 class="mt-4 text-lg font-medium text-slate-300">No records discovered</h3>
-            <p class="mt-1 text-sm text-slate-400">Try checking your spelling or searching for another term.</p>
-        </div>
+                <button 
+                    type="submit" 
+                    class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-indigo-600/20 transition-all cursor-pointer text-sm tracking-wide transform active:scale-[0.98]"
+                >
+                    Unlock Knowledge Base →
+                </button>
+            </form>
 
+        </div>
     </main>
 
-    <!-- Responsive Footer Component -->
-    <footer class="bg-slate-950 text-slate-500 text-xs py-6 border-t border-slate-800 mt-12">
-        <div class="max-w-7xl mx-auto px-4 text-center sm:flex sm:justify-between sm:items-center">
-            <p>&copy; 2026 Structured Exclusively for the World's Best Future Neurologist.</p>
-            <p class="mt-2 sm:mt-0 text-emerald-400/70 font-medium">Built with continuous care & effort.</p>
-        </div>
+    <!-- Footer acknowledging your effort -->
+    <footer class="w-full text-center text-xs text-slate-500 pb-2 animate-fade-in" style="animation-delay: 0.3s;">
+        <p>Built with immense care and effort for the smartest mind I know.</p>
     </footer>
 
-    <!-- Core Interactive Application Engine -->
+    <!-- Logic to verify password -->
     <script>
-        // High-Fidelity Data Repositories (Neurologists Database)
-        const neurologistsData = [
-            {
-                title: "Dr. Rita Levi-Montalcini",
-                meta: "1909 – 2012 | Italy",
-                tag: "Neurobiology",
-                body: "Awarded the Nobel Prize in Physiology or Medicine in 1986 for her groundbreaking discovery of <strong>Nerve Growth Factor (NGF)</strong>. Her profound research on cellular growth pathways laid fundamental mechanisms for modern neurodegenerative investigations.",
-                keywords: "rita levi montalcini italy nobel prize nerve growth factor ngf cellular pathways neurodegenerative"
-            },
-            {
-                title: "Dr. Jean-Martin Charcot",
-                meta: "1824 – 1880 | France",
-                tag: "Clinical Neurology",
-                body: "Widely regarded as the founder of modern clinical neurology. He was the first to systematically delineate and map out <strong>Amyotrophic Lateral Sclerosis (ALS)</strong>, Charcot-Marie-Tooth disease, and multiple sclerosis clinical profiles.",
-                keywords: "jean martin charcot france founder clinical als amyotrophic lateral sclerosis tooth disease multiple sclerosis ms"
-            },
-            {
-                title: "Dr. Paul Broca",
-                meta: "1824 – 1880 | France",
-                tag: "Neuroanatomy",
-                body: "Discovered the structural localization of speech within the left frontal lobe, famously known as <strong>Broca's Area</strong>. His work with aphasic patients pioneered localized functional processing models of the human brain.",
-                keywords: "paul broca france speech localization frontal lobe brocas area aphasia functional processing mapping"
-            },
-            {
-                title: "Dr. Oliver Sacks",
-                meta: "1933 – 2015 | United Kingdom",
-                tag: "Clinical Practice",
-                body: "Renowned clinician and author who humanized complex neurological variants through case histories. Documented deep research into post-encephalitic parkinsonism treatments (Awakenings) and diverse perceptual disorders.",
-                keywords: "oliver sacks uk writer clinical case studies parkinsonism awakenings agnosia perceptual disorders"
-            },
-            {
-                title: "Dr. Brenda Milner",
-                meta: "Born 1918 | Canada",
-                tag: "Neuropsychology",
-                body: "Pioneered clinical neuropsychology through foundational long-term tracking of patient H.M. Her research explicitly isolated the role of the <strong>hippocampus</strong> in structural memory consolidation and working recall.",
-                keywords: "brenda milner canada neuropsychology hm hippocampus memory memory consolidation recall"
-            },
-            {
-                title: "Dr. Carl Wernicke",
-                meta: "1848 – 1905 | Germany",
-                tag: "Neuropsychiatry",
-                body: "Conceptualized structural language comprehension zones within the posterior superior temporal gyrus (<strong>Wernicke's Area</strong>). Differentiated receptive language disorders from motor expressive dysfunction profiles.",
-                keywords: "carl wernicke germany language comprehension superior temporal gyrus wernickes area receptive sensory aphasia"
-            }
-        ];
+        window.location.href='dashboard.html';
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const passcodeField = document.getElementById('passcode').value;
+            const errorMsg = document.getElementById('errorMessage');
 
-        // High-Fidelity Data Repositories (Neurological Data Hub)
-        const clinicalDataHub = [
-            {
-                title: "Neurodegenerative Pathology Matrix",
-                meta: "Clinical Guidelines",
-                tag: "Pathophysiology",
-                body: "Deep mapping of localized cellular breakdowns: <ul><li>• <strong>Alzheimer's:</strong> Amyloid-beta plaque clustering & intracellular Tau protein neurofibrillary tangles.</li><li>• <strong>Parkinson's:</strong> Alpha-synuclein structural aggregation causing Lewy body formations inside the substantia nigra.</li></ul>",
-                keywords: "neurodegenerative pathology alzheimers parkinson tau proteins amyloid beta lewy body substantia nigra"
-            },
-            {
-                title: "Advanced Clinical Diagnostics Core",
-                meta: "Diagnostics Protocol",
-                tag: "Clinical Tools",
-                body: "Systematic guidelines for tracking diagnostic data: <ul><li>• <strong>EEG Profiles:</strong> Delta (under 4Hz - deep sleep/lesions), Theta (4-7Hz), Alpha (8-12Hz - relaxed occipital state), Beta (13-30Hz - active).</li><li>• <strong>MRI Sequencing:</strong> T1-weighted images show structural anatomy (fluid is dark); T2-weighted paths highlight visual edema and active pathology (fluid is bright).</li></ul>",
-                keywords: "advanced clinical diagnostics eeg mri t1 t2 sequencing delta theta alpha beta waves neuroimaging edema"
-            },
-            {
-                title: "Cortical Mapping & Cerebrovascular Systems",
-                meta: "Anatomy Reference",
-                tag: "Neuroanatomy",
-                body: "Structural parameters of the blood-brain barriers and cortex organization. Outlines the <strong>Circle of Willis</strong> layout ensuring vascular fallback routing, alongside complete Brodmann structural micro-architectural tracking parameters.",
-                keywords: "cortical mapping cerebrovascular circle of willis vascular routing brodmann areas blood brain barrier anatomy"
-            }
-        ];
-
-        // State variables tracking application architecture view
-        let currentTab = 'neurologists';
-
-        // Toggles visibility of the personal care modal
-        function toggleDedication() {
-            const modal = document.getElementById('dedicationModal');
-            modal.classList.toggle('hidden');
-        }
-
-        // Handles tab switching UI logic
-        function switchTab(tabName) {
-            currentTab = tabName;
-            
-            const tabNeuroBtn = document.getElementById('tabNeurologists');
-            const tabDataBtn = document.getElementById('tabDataHub');
-            const searchInput = document.getElementById('searchInput');
-
-            // Reset search query during active view transforms
-            searchInput.value = '';
-
-            if (tabName === 'neurologists') {
-                tabNeuroBtn.className = "px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 bg-emerald-500 text-white shadow";
-                tabDataBtn.className = "px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 text-slate-400 hover:text-slate-200";
+            // You can change 'neuro123' to whatever passcode you want her to type!
+            if (passcodeField === 'neuro123') {
+                errorMsg.classList.add('hidden');
+                // Right now it just alerts, but next we will make it seamlessly open the dashboard!
+                alert('Success! Redirecting her to her custom Neurology Hub...');
+                // window.location.href = 'dashboard.html'; // This will be our next step!
             } else {
-                tabDataBtn.className = "px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 bg-emerald-500 text-white shadow";
-                tabNeuroBtn.className = "px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 text-slate-400 hover:text-slate-200";
+                errorMsg.classList.remove('hidden');
+                document.getElementById('passcode').value = ''; // Clear input on failure
             }
-
-            renderGrid(getActiveDataset());
-        }
-
-        // Resolves target array based on current tab state
-        function getActiveDataset() {
-            return currentTab === 'neurologists' ? neurologistsData : clinicalDataHub;
-        }
-
-        // Renders visual dashboard items into viewport layout
-        function renderGrid(dataset) {
-            const grid = document.getElementById('contentGrid');
-            const emptyState = document.getElementById('emptyState');
-            grid.innerHTML = '';
-
-            if (dataset.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
-            } else {
-                emptyState.classList.add('hidden');
-            }
-
-            dataset.forEach(item => {
-                // Determine layout pill colors depending on tags dynamically
-                let tagColorClass = "bg-slate-700 text-slate-300";
-                if (item.tag === "Neurobiology" || item.tag === "Pathophysiology") tagColorClass = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
-                if (item.tag === "Neuroanatomy" || item.tag === "Clinical Neurology") tagColorClass = "bg-blue-500/10 text-blue-400 border border-blue-500/20";
-                if (item.tag === "Clinical Tools" || item.tag === "Clinical Practice") tagColorClass = "bg-purple-500/10 text-purple-400 border border-purple-500/20";
-
-                const cardHtml = `
-                    <div class="bg-slate-800/60 border border-slate-700/70 rounded-xl p-5 hover:border-slate-600 hover:bg-slate-800 transition-all duration-200 shadow-md flex flex-col justify-between group">
-                        <div>
-                            <div class="flex items-start justify-between gap-2 mb-3">
-                                <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${tagColorClass}">
-                                    ${item.tag}
-                                </span>
-                                <span class="text-xs text-slate-500 font-medium">${item.meta}</span>
-                            </div>
-                            <h2 class="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors duration-150 mb-2">
-                                ${item.title}
-                            </h2>
-                            <div class="text-slate-300 text-sm leading-relaxed space-y-2">
-                                ${item.body}
-                            </div>
-                        </div>
-                    </div>
-                `;
-                grid.innerHTML += cardHtml;
-            });
-        }
-
-        // Real-time keyword filter engine logic
-        function handleSearch() {
-            const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            const fullDataset = getActiveDataset();
-
-            if (query === '') {
-                renderGrid(fullDataset);
-                return;
-            }
-
-            const filtered = fullDataset.filter(item => item.keywords.includes(query) || item.title.toLowerCase().includes(query));
-            renderGrid(filtered);
-        }
-
-        // Initial application build execution sequence
-        window.addEventListener('DOMContentLoaded', () => {
-            renderGrid(neurologistsData);
         });
     </script>
+
 </body>
 </html>

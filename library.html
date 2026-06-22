@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neurology Reference Library</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <nav class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <a href="dashboard.html" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1 self-start sm:self-auto">
+                ← Back to Dashboard
+            </a>
+            
+            <div class="w-full sm:w-80 relative">
+                <input 
+                    type="text" 
+                    id="librarySearch" 
+                    oninput="filterLibrary()" 
+                    placeholder="Filter conditions (e.g., Stroke, Epilepsy)..." 
+                    class="w-full text-xs bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 pl-9 focus:outline-none focus:border-purple-500 text-slate-200 transition-all shadow-inner"
+                >
+                <span class="absolute left-3 top-3 text-xs opacity-40">🔍</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl w-full mx-auto px-4 py-8 flex-grow">
+        
+        <div class="mb-8">
+            <h2 class="text-2xl font-extrabold text-white tracking-tight">Clinical Pathology Index</h2>
+            <p class="text-xs text-slate-400 mt-1">Cross-referenced database mapping diagnostic pillars and disease markers.</p>
+        </div>
+
+        <div id="libraryGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <article class="library-card bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-all" data-title="ischemic stroke cerebrovascular accident cva">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-mono px-2 py-0.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded font-semibold uppercase tracking-wider">Vascular</span>
+                    <span class="text-[10px] text-slate-500 font-mono">ICD-10: I63</span>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">Ischemic Stroke (CVA)</h3>
+                <p class="text-xs text-slate-400 leading-relaxed mb-4">Acute localized occlusion of a cerebral artery leading to a severe restriction of blood flow, resulting in rapid ischemic cascade damage and focal neurological deficits.</p>
+                <div class="border-t border-slate-800/60 pt-3 space-y-1">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Clinical Presentation:</span>
+                    <p class="text-xs text-slate-300 italic">Contralateral hemiparesis, sudden facial drooping, acute dysarthria, and visual field disruptions.</p>
+                </div>
+            </article>
+
+            <article class="library-card bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-all" data-title="alzheimers disease dementia neurodegenerative">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-mono px-2 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded font-semibold uppercase tracking-wider">Neurodegenerative</span>
+                    <span class="text-[10px] text-slate-500 font-mono">ICD-10: G30</span>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">Alzheimer's Disease</h3>
+                <p class="text-xs text-slate-400 leading-relaxed mb-4">Progressive, irreversible neurodegenerative disorder characterized histopathologically by extracellular beta-amyloid plaques and intracellular neurofibrillary tau tangles.</p>
+                <div class="border-t border-slate-800/60 pt-3 space-y-1">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Clinical Presentation:</span>
+                    <p class="text-xs text-slate-300 italic">Short-term episodic memory deficits, geographic disorientation, executive dysfunction, and progressive language decline.</p>
+                </div>
+            </article>
+
+            <article class="library-card bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-all" data-title="epilepsy tonic clonic seizure disorder">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-mono px-2 py-0.5 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded font-semibold uppercase tracking-wider">Paroxysmal</span>
+                    <span class="text-[10px] text-slate-500 font-mono">ICD-10: G40</span>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">Epileptic Seizure Disorders</h3>
+                <p class="text-xs text-slate-400 leading-relaxed mb-4">Chronic neurological disorder categorized by recurrent, unprovoked seizures originating from hypersynchronous, abnormal electrical neuronal discharges in the brain layer.</p>
+                <div class="border-t border-slate-800/60 pt-3 space-y-1">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Clinical Presentation:</span>
+                    <p class="text-xs text-slate-300 italic">Altered state of consciousness, tonic muscle stiffening followed by rhythmic clonic jerking, or brief staring spells.</p>
+                </div>
+            </article>
+
+            <article class="library-card bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-all" data-title="multiple sclerosis ms demyelinating auto immune">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-mono px-2 py-0.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded font-semibold uppercase tracking-wider">Demyelinating</span>
+                    <span class="text-[10px] text-slate-500 font-mono">ICD-10: G35</span>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">Multiple Sclerosis (MS)</h3>
+                <p class="text-xs text-slate-400 leading-relaxed mb-4">Immune-mediated inflammatory disease targeting central nervous system myelin, generating disseminated plaques throughout the white matter pathways.</p>
+                <div class="border-t border-slate-800/60 pt-3 space-y-1">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Clinical Presentation:</span>
+                    <p class="text-xs text-slate-300 italic">Optic neuritis, Lhermitte's sign, sensory loss, motor weakness, and cerebellar ataxia episodic patterns.</p>
+                </div>
+            </article>
+
+        </div>
+
+        <div id="noResults" class="hidden text-center py-16 bg-slate-900/20 border border-dashed border-slate-800 rounded-2xl">
+            <span class="text-2xl">🔬</span>
+            <p class="text-sm text-slate-400 mt-2 font-medium">No medical data matching that query found in local index.</p>
+        </div>
+
+    </main>
+
+    <footer class="p-4 bg-slate-950 text-center text-[11px] text-slate-600 border-t border-slate-900/60">
+        <p>Built with painstaking effort to eliminate the clutter of traditional text files.</p>
+    </footer>
+
+    <script>
+        function filterLibrary() {
+            const query = document.getElementById('librarySearch').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.library-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const searchData = card.getAttribute('data-title');
+                if (searchData.includes(query)) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            // Handle displaying the empty state condition layout
+            const noResultsAlert = document.getElementById('noResults');
+            if (visibleCount === 0) {
+                noResultsAlert.classList.remove('hidden');
+            } else {
+                noResultsAlert.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
